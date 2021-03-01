@@ -1,3 +1,9 @@
 package com.gabez.yet_another_currency_converter.app.calculator.calculateRequest
 
-data class CalculateRequest(val firstCurrency: String?, val secondCurrency: String?, val amount: Float?)
+import com.gabez.yet_another_currency_converter.entities.CurrencyForView
+
+data class CalculateRequest(
+    val firstCurrency: CurrencyForView?,
+    val secondCurrency: CurrencyForView?,
+    val amount: Float?
+)

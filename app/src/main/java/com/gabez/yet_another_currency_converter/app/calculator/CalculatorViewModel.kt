@@ -6,15 +6,18 @@ import androidx.lifecycle.ViewModel
 import com.gabez.yet_another_currency_converter.app.calculator.calculateRequest.CalculateRequest
 import com.gabez.yet_another_currency_converter.app.calculator.calculateRequest.CalculateRequestValidator
 import com.gabez.yet_another_currency_converter.app.calculator.calculateRequest.CalculateRequestValidatorResponse
+import com.gabez.yet_another_currency_converter.entities.CurrencyForView
 
 class CalculatorViewModel: ViewModel() {
     private var valueToCalculate: Float? = 0f
 
-    private val _firstCurrency: MutableLiveData<String> = MutableLiveData("PLN")
-    val firstCurrency: LiveData<String> = _firstCurrency
+    private val _firstCurrency: MutableLiveData<CurrencyForView> = MutableLiveData()
 
-    private val _secondCurrency: MutableLiveData<String> = MutableLiveData("PLN")
-    val secondCurrency: LiveData<String> = _secondCurrency
+    val firstCurrency: LiveData<CurrencyForView> = _firstCurrency
+
+    private val _secondCurrency: MutableLiveData<CurrencyForView> = MutableLiveData()
+
+    val secondCurrency: LiveData<CurrencyForView> = _secondCurrency
 
     private val _isLoading: MutableLiveData<Boolean> = MutableLiveData(false)
     val isLoading: LiveData<Boolean> = _isLoading
@@ -26,15 +29,15 @@ class CalculatorViewModel: ViewModel() {
         valueToCalculate = value
     }
 
-    fun setFirstCurrency(value: String) = _firstCurrency.postValue(value)
+    fun setFirstCurrency(value: CurrencyForView) = _firstCurrency.postValue(value)
 
-    fun setSecondCurrency(value: String) = _secondCurrency.postValue(value)
+    fun setSecondCurrency(value: CurrencyForView) = _secondCurrency.postValue(value)
 
     fun calculate(): CalculateRequestValidatorResponse?{
         val calculateRequest = createCalculateRequest()
         val response = CalculateRequestValidator.isValid(calculateRequest)
         if(response.isValid){
-            /* send request to calculate */
+            //TODO: send request to calculate
             return null
         }else return response
     }

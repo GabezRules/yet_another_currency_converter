@@ -1,5 +1,7 @@
 package com.gabez.yet_another_currency_converter.app.calculator.calculateRequest
 
+import com.gabez.yet_another_currency_converter.entities.CurrencyForView
+
 class CalculateRequestValidator {
     companion object{
         fun isValid(request: CalculateRequest): CalculateRequestValidatorResponse{
@@ -13,11 +15,7 @@ class CalculateRequestValidator {
             return response
         }
 
-        private fun isCurrencyValid(currency: String?): Boolean{
-            if(currency == null) return false
-            if(currency.replace("\\s".toRegex(), "") == "") return false
-            return true
-        }
+        private fun isCurrencyValid(currency: CurrencyForView?): Boolean = currency != null
 
         private fun isAmountValid(amount: Float?): Boolean = amount != null
     }

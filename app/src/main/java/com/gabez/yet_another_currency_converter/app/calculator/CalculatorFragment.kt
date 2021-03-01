@@ -10,11 +10,15 @@ import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import com.gabez.yet_another_currency_converter.R
+import com.gabez.yet_another_currency_converter.app.selectFromAllCurrencies.CurrencySpinnerIndex
+import com.gabez.yet_another_currency_converter.app.selectFromAllCurrencies.SelectCurrencyDialogCallback
+import com.gabez.yet_another_currency_converter.app.selectFromAllCurrencies.SelectCurrencyDialogFragment
+import com.gabez.yet_another_currency_converter.entities.CurrencyForView
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.textfield.TextInputEditText
 import com.jaredrummler.materialspinner.MaterialSpinner
 
-class CalculatorFragment : Fragment() {
+class CalculatorFragment : Fragment(), SelectCurrencyDialogCallback {
 
     private lateinit var selectFirstCurrency: MaterialSpinner
     private lateinit var selectSecondCurrency: MaterialSpinner
@@ -68,24 +72,30 @@ class CalculatorFragment : Fragment() {
 
     private fun setupCurrenciesSelection(){
         selectFirstCurrency.setOnClickListener {
-            //viewModel.setFirstCurrency("PLN")
+            SelectCurrencyDialogFragment(this@CalculatorFragment, CurrencySpinnerIndex.FIRST)
+                .show(parentFragmentManager, "SELECT_CURRENCY")
         }
 
         selectSecondCurrency.setOnClickListener {
-            //viewModel.setSecondCurrency("PLN")
+            SelectCurrencyDialogFragment(this@CalculatorFragment, CurrencySpinnerIndex.SECOND)
+                .show(parentFragmentManager, "SELECT_CURRENCY")
         }
 
         viewModel.firstCurrency.observe(viewLifecycleOwner, Observer{
-            selectFirstCurrency.setItems(listOf(it))
+            //selectFirstCurrency.setItems(listOf(it.nameShort))
+            selectFirstCurrency.text = it.nameShort
+            selectFirstCurrency.collapse()
         })
 
         viewModel.secondCurrency.observe(viewLifecycleOwner, Observer{
-            selectSecondCurrency.setItems(listOf(it))
+            //selectSecondCurrency.setItems(listOf(it.nameShort))
+            selectSecondCurrency.text = it.nameShort
+            selectSecondCurrency.collapse()
         })
     }
 
     private fun setupCurrenciesInputs(){
-        firstCurrencyAmount.doOnTextChanged { text, start, before, count ->
+        firstCurrencyAmount.doOnTextChanged { text, _, _, _ ->
             firstCurrencyAmount.error = null
             viewModel.setValueToCalculate(text.toString().toFloatOrNull())
         }
@@ -107,18 +117,27 @@ class CalculatorFragment : Fragment() {
     }
 
     private fun setupLoadingObserver(){
-        viewModel.isLoading.observe(viewLifecycleOwner, Observer{ isLoading ->
+        viewModel.isLoading.observe(viewLifecycleOwner, { isLoading ->
             progressBar.visibility = if(isLoading) View.VISIBLE else View.GONE
         })
     }
 
     private fun setupInternetWarningObserver(){
-        viewModel.isLoading.observe(viewLifecycleOwner, Observer{ showErrow ->
+        viewModel.showInternetWarning.observe(viewLifecycleOwner, { showErrow ->
             noInternetWarning.visibility = if(showErrow) View.VISIBLE else View.GONE
         })
     }
 
     companion object{
         fun getInstance(): CalculatorFragment = CalculatorFragment()
+    }
+
+    override fun setCurrency(currency: CurrencyForView, spinnerIndex: CurrencySpinnerIndex) {
+        when(spinnerIndex){
+
+            CurrencySpinnerIndex.FIRST -> viewModel.setFirstCurrency(currency)
+
+            CurrencySpinnerIndex.SECOND -> viewModel.setSecondCurrency(currency)
+        }
     }
 }
