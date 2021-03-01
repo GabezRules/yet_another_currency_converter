@@ -4,7 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.gabez.yet_another_currency_converter.app.calculator.calculateRequest.CalculateRequest
+import com.gabez.yet_another_currency_converter.app.calculator.calculateRequest.ValidateRequest
 import com.gabez.yet_another_currency_converter.app.calculator.calculateRequest.CalculateRequestValidator
 import com.gabez.yet_another_currency_converter.domain.response.CalculateResponse
 import com.gabez.yet_another_currency_converter.domain.response.CalculateResponseStatus
@@ -13,7 +13,6 @@ import com.gabez.yet_another_currency_converter.entities.CurrencyForView
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 
 class CalculatorViewModel(private val usecase: CalculateUsecase): ViewModel() {
     private var valueToCalculate: Float? = 0f
@@ -65,8 +64,8 @@ class CalculatorViewModel(private val usecase: CalculateUsecase): ViewModel() {
         _secondCurrency.value = bufferValue
     }
 
-    private fun createCalculateRequest(): CalculateRequest{
-        return CalculateRequest(
+    private fun createCalculateRequest(): ValidateRequest{
+        return ValidateRequest(
             firstCurrency = _firstCurrency.value,
             secondCurrency = _secondCurrency.value,
             amount = valueToCalculate

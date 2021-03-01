@@ -4,7 +4,7 @@ import com.gabez.yet_another_currency_converter.entities.CurrencyForView
 
 class CalculateRequestValidator {
     companion object{
-        fun isValid(request: CalculateRequest): CalculateRequestValidatorResponse{
+        fun isValid(request: ValidateRequest): CalculateRequestValidatorResponse{
             val response = CalculateRequestValidatorResponse(
                 isFirstCurrencyValid = isCurrencyValid(request.firstCurrency),
                 isSecondCurrencyValid = isCurrencyValid(request.secondCurrency),
