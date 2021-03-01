@@ -7,7 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.gabez.yet_another_currency_converter.app.calculator.calculateRequest.ValidateRequest
 import com.gabez.yet_another_currency_converter.app.calculator.calculateRequest.CalculateRequestValidator
 import com.gabez.yet_another_currency_converter.domain.response.CalculateResponse
-import com.gabez.yet_another_currency_converter.domain.response.CalculateResponseStatus
+import com.gabez.yet_another_currency_converter.domain.response.ResponseStatus
 import com.gabez.yet_another_currency_converter.domain.usecases.CalculateUsecase
 import com.gabez.yet_another_currency_converter.entities.CurrencyForView
 import kotlinx.coroutines.flow.Flow
@@ -55,7 +55,7 @@ class CalculatorViewModel(private val usecase: CalculateUsecase): ViewModel() {
                 val res = usecase.invoke()
                 emit(CalculateResponse(res.flag, res))
             }.invokeOnCompletion { _isLoading.postValue(false) }
-        }else emit(CalculateResponse(CalculateResponseStatus.NOT_VALID, response))
+        }else emit(CalculateResponse(ResponseStatus.NOT_VALID, response))
     }
 
     fun swapCurrencies(){

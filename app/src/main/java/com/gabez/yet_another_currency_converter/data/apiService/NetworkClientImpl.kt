@@ -5,14 +5,15 @@ import com.gabez.yet_another_currency_converter.domain.calculations.Calculations
 import com.gabez.yet_another_currency_converter.domain.request.CalculateRequest
 import com.gabez.yet_another_currency_converter.domain.response.CalculateResponse
 import com.gabez.yet_another_currency_converter.domain.response.CalculateResponseData
-import com.gabez.yet_another_currency_converter.domain.response.CalculateResponseStatus
+import com.gabez.yet_another_currency_converter.domain.response.GetAllCurrenciesResponse
+import com.gabez.yet_another_currency_converter.domain.response.ResponseStatus
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import retrofit2.Retrofit
 import retrofit2.awaitResponse
 import retrofit2.converter.gson.GsonConverterFactory
 import java.util.*
 
-class NetworkClientImpl: NetworkClient {
+class NetworkClientImpl : NetworkClient {
 
     private var retrofit: Retrofit = Retrofit.Builder()
         .baseUrl(BASE_URL)
@@ -27,29 +28,55 @@ class NetworkClientImpl: NetworkClient {
 
     @ExperimentalCoroutinesApi
     override suspend fun calculate(request: CalculateRequest): CalculateResponse {
-        val firstCurrency = getCurrency(request.firstCurrencyShortName, request.firstCurrencyShortName)
-        val secondCurrency = getCurrency(request.secondCurrencyShortName, request.secondCurrencyShortName)
+        val firstCurrency =
+            getCurrency(request.firstCurrencyShortName, request.firstCurrencyShortName)
+        val secondCurrency =
+            getCurrency(request.secondCurrencyShortName, request.secondCurrencyShortName)
 
-        return if(firstCurrency != null && secondCurrency != null){
+        return if (firstCurrency != null && secondCurrency != null) {
             val responseData = CalculateResponseData(
-                amount = CalculationsHelper.getResult(request.amount, firstCurrency.Mid, secondCurrency.Mid)
+                amount = CalculationsHelper.getResult(
+                    request.amount,
+                    firstCurrency.Mid,
+                    secondCurrency.Mid
+                )
             )
 
             CalculateResponse(
-                flag = CalculateResponseStatus.SUCCESS,
+                flag = ResponseStatus.SUCCESS,
                 data = responseData
             )
         } else CalculateResponse(
-            flag = CalculateResponseStatus.FAILED,
+            flag = ResponseStatus.FAILED,
             data = "error"
         )
 
     }
 
+    override suspend fun getAllCurrencies(): GetAllCurrenciesResponse {
+        val currenciesFromA = service.getAllFromTable("a").awaitResponse()
+        val currenciesFromB = service.getAllFromTable("b").awaitResponse()
+        val allCurrencies = arrayListOf<CurrencyFromApi>()
+
+        return if (currenciesFromA.isSuccessful && currenciesFromB.isSuccessful && currenciesFromA.body()?.isNotEmpty()?: false && currenciesFromB.body()?.isNotEmpty()?: false) {
+            allCurrencies.addAll(currenciesFromA.body()!!)
+            allCurrencies.addAll(currenciesFromB.body()!!)
+            GetAllCurrenciesResponse(
+                flag = ResponseStatus.SUCCESS,
+                data = allCurrencies
+            )
+        }else GetAllCurrenciesResponse(
+            flag = ResponseStatus.FAILED,
+            data = currenciesFromA.errorBody().toString() + " " + currenciesFromB.errorBody().toString()
+        )
+    }
+
     @ExperimentalCoroutinesApi
     suspend fun getCurrency(code: String, longName: String): CurrencyFromApi? {
-        val currencyFromA = service.getCurrencyFromTable(code.toLowerCase(Locale.ROOT), "a").awaitResponse()
-        val currencyFromB = service.getCurrencyFromTable(code.toLowerCase(Locale.ROOT), "b").awaitResponse()
+        val currencyFromA =
+            service.getCurrencyFromTable(code.toLowerCase(Locale.ROOT), "a").awaitResponse()
+        val currencyFromB =
+            service.getCurrencyFromTable(code.toLowerCase(Locale.ROOT), "b").awaitResponse()
 
         return when {
             currencyFromA.isSuccessful && currencyFromA.code() != 404 -> currencyFromA.body()!!

@@ -6,9 +6,9 @@ import retrofit2.http.GET
 import retrofit2.http.Path
 
 interface ApiService {
-    @GET("/rated/{table}/{code}/?format=json")
+    @GET("rated/{table}/{code}/?format=json")
     fun getCurrencyFromTable(@Path("code") code: String, @Path("table") table: String): Call<CurrencyFromApi>
 
-    @GET("/tables/{table}")
-    fun getAllFromTable(@Path("table") table: String)
+    @GET("tables/{table}/?format=json")
+    fun getAllFromTable(@Path("table") table: String): Call<List<CurrencyFromApi>>
 }

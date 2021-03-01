@@ -16,7 +16,7 @@ import com.gabez.yet_another_currency_converter.app.selectFromAllCurrencies.Curr
 import com.gabez.yet_another_currency_converter.app.selectFromAllCurrencies.SelectCurrencyDialogCallback
 import com.gabez.yet_another_currency_converter.app.selectFromAllCurrencies.SelectCurrencyDialogFragment
 import com.gabez.yet_another_currency_converter.domain.response.CalculateResponseData
-import com.gabez.yet_another_currency_converter.domain.response.CalculateResponseStatus
+import com.gabez.yet_another_currency_converter.domain.response.ResponseStatus
 import com.gabez.yet_another_currency_converter.entities.CurrencyForView
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.textfield.TextInputEditText
@@ -24,7 +24,6 @@ import com.jaredrummler.materialspinner.MaterialSpinner
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import org.koin.core.KoinComponent
 import org.koin.core.inject
 
@@ -114,14 +113,14 @@ class CalculatorFragment : Fragment(), SelectCurrencyDialogCallback, KoinCompone
             GlobalScope.launch {
                 viewModel.calculate().collect { response ->
                     when(response.flag){
-                        CalculateResponseStatus.NOT_VALID -> requireActivity().runOnUiThread {
+                        ResponseStatus.NOT_VALID -> requireActivity().runOnUiThread {
                             setErrorsOnNonValidData(response.data as CalculateRequestValidatorResponse)
                             Toast.makeText(requireContext(), "NOT VALID", Toast.LENGTH_LONG).show()
                         }
-                        CalculateResponseStatus.FAILED -> requireActivity().runOnUiThread {
+                        ResponseStatus.FAILED -> requireActivity().runOnUiThread {
                             Toast.makeText(requireContext(), "error", Toast.LENGTH_LONG).show()
                         }
-                        CalculateResponseStatus.SUCCESS -> requireActivity().runOnUiThread {
+                        ResponseStatus.SUCCESS -> requireActivity().runOnUiThread {
                             resetErrors()
                             Toast.makeText(requireContext(), "SUCCESS", Toast.LENGTH_LONG).show()
                             setResult(response.data as CalculateResponseData)

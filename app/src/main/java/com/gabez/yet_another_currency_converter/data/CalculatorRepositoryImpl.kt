@@ -7,6 +7,7 @@ import com.gabez.yet_another_currency_converter.data.dataSources.providers.Remot
 import com.gabez.yet_another_currency_converter.domain.CalculatorRepository
 import com.gabez.yet_another_currency_converter.domain.request.CalculateRequest
 import com.gabez.yet_another_currency_converter.domain.response.CalculateResponse
+import com.gabez.yet_another_currency_converter.domain.response.GetAllCurrenciesResponse
 import com.gabez.yet_another_currency_converter.internetConnection.InternetConnectionHelper
 
 class CalculatorRepositoryImpl : CalculatorRepository {
@@ -17,5 +18,10 @@ class CalculatorRepositoryImpl : CalculatorRepository {
     override suspend fun calculate(request: CalculateRequest): CalculateResponse {
         return if (internetConnectionHelper.hasInternetConnection()) remoteDatasource.calculate(request)
         else localDatasource.calculate(request)
+    }
+
+    override suspend fun getAllCurrencies(): GetAllCurrenciesResponse {
+        return if (internetConnectionHelper.hasInternetConnection()) remoteDatasource.getCurrencies()
+        else localDatasource.getCurrencies()
     }
 }
