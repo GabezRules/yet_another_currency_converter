@@ -51,8 +51,8 @@ class CalculatorViewModel(private val usecase: CalculateUsecase): ViewModel() {
         val response = CalculateRequestValidator.isValid(calculateRequest)
         if(response.isValid){
             viewModelScope.launch{
-                val response = usecase.invoke()
-                emit(CalculateResponse(response.flag, response))
+                val res = usecase.invoke()
+                emit(CalculateResponse(res.flag, res))
             }
             emit(CalculateResponse(CalculateResponseStatus.SUCCESS, arrayListOf<Any?>()))
         }else emit(CalculateResponse(CalculateResponseStatus.NOT_VALID, response))

@@ -11,7 +11,7 @@ class CalculatorRepositoryImpl(
     private val localDatasource: LocalDatasource,
     private val remoteDatasource: RemoteDatasource
 ) : CalculatorRepository {
-    val internetConnectionHelper = InternetConnectionHelper()
+    private val internetConnectionHelper = InternetConnectionHelper()
 
     override suspend fun calculate(request: CalculateRequest): CalculateResponse {
         return if (internetConnectionHelper.hasInternetConnection()) remoteDatasource.calculate(request)
