@@ -37,8 +37,8 @@ class NetworkClientImpl : NetworkClient {
             val responseData = CalculateResponseData(
                 amount = CalculationsHelper.getResult(
                     request.amount,
-                    firstCurrency.Mid,
-                    secondCurrency.Mid
+                    (firstCurrency as CurrencyFromApi).Mid,
+                    (secondCurrency as CurrencyFromApi).Mid
                 )
             )
 
@@ -72,15 +72,16 @@ class NetworkClientImpl : NetworkClient {
     }
 
     @ExperimentalCoroutinesApi
-    suspend fun getCurrency(code: String, longName: String): CurrencyFromApi? {
+    suspend fun getCurrency(code: String, longName: String): Any? {
         val currencyFromA =
             service.getCurrencyFromTable(code.toLowerCase(Locale.ROOT), "a").awaitResponse()
         val currencyFromB =
             service.getCurrencyFromTable(code.toLowerCase(Locale.ROOT), "b").awaitResponse()
 
         return when {
-            currencyFromA.isSuccessful && currencyFromA.code() != 404 -> currencyFromA.body()!!
-            currencyFromB.isSuccessful && currencyFromB.code() != 404 -> currencyFromB.body()!!
+            currencyFromA.isSuccessful && !currencyFromA.errorBody().toString().contains("404") -> currencyFromA.body()!!
+            currencyFromB.isSuccessful && !currencyFromB.errorBody().toString().contains("404") -> currencyFromB.body()!!
+            currencyFromA.errorBody().toString().contains("404") && currencyFromB.errorBody().toString().contains("404") -> currencyFromA.errorBody().toString()+" "+ currencyFromB.errorBody().toString()
             else -> null
         }
     }

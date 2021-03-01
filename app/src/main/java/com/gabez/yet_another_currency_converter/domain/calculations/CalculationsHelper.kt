@@ -15,7 +15,7 @@ class CalculationsHelper {
             second /= first
             second *= amount
 
-            return second
+            return second.roundTo(2)
         }
 
         private fun Float.roundTo(numFractionDigits: Int): Float {
