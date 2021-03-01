@@ -1,6 +1,5 @@
 package com.gabez.yet_another_currency_converter.data.apiService
 
-import android.content.Context
 import com.gabez.yet_another_currency_converter.data.entities.CurrencyFromApi
 import com.gabez.yet_another_currency_converter.domain.calculations.CalculationsHelper
 import com.gabez.yet_another_currency_converter.domain.request.CalculateRequest
@@ -11,6 +10,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import retrofit2.Retrofit
 import retrofit2.awaitResponse
 import retrofit2.converter.gson.GsonConverterFactory
+import java.util.*
 
 class NetworkClientImpl: NetworkClient {
 
@@ -27,28 +27,29 @@ class NetworkClientImpl: NetworkClient {
 
     @ExperimentalCoroutinesApi
     override suspend fun calculate(request: CalculateRequest): CalculateResponse {
-        val firstCurrency = getCurrency(request.firstCurrencyShortName)
-        val secondCurrency = getCurrency(request.secondCurrencyShortName)
+        val firstCurrency = getCurrency(request.firstCurrencyShortName, request.firstCurrencyShortName)
+        val secondCurrency = getCurrency(request.secondCurrencyShortName, request.secondCurrencyShortName)
 
-        var responseData: Any? = null
-
-        responseData = if(firstCurrency != null && secondCurrency != null){
-            CalculateResponseData(
+        return if(firstCurrency != null && secondCurrency != null){
+            val responseData = CalculateResponseData(
                 amount = CalculationsHelper.getResult(request.amount, firstCurrency.Mid, secondCurrency.Mid)
             )
-        } else "Unknown error"
 
-        return CalculateResponse(
-            flag = CalculateResponseStatus.SUCCESS,
-            data = responseData
+            CalculateResponse(
+                flag = CalculateResponseStatus.SUCCESS,
+                data = responseData
+            )
+        } else CalculateResponse(
+            flag = CalculateResponseStatus.FAILED,
+            data = "error"
         )
 
     }
 
     @ExperimentalCoroutinesApi
-    suspend fun getCurrency(code: String): CurrencyFromApi? {
-        var currencyFromA = service.getCurrencyFromA(code).awaitResponse()
-        var currencyFromB = service.getCurrencyFromB(code).awaitResponse()
+    suspend fun getCurrency(code: String, longName: String): CurrencyFromApi? {
+        val currencyFromA = service.getCurrencyFromTable(code.toLowerCase(Locale.ROOT), "a").awaitResponse()
+        val currencyFromB = service.getCurrencyFromTable(code.toLowerCase(Locale.ROOT), "b").awaitResponse()
 
         return when {
             currencyFromA.isSuccessful && currencyFromA.code() != 404 -> currencyFromA.body()!!

@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ProgressBar
 import android.widget.TextView
+import android.widget.Toast
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
@@ -23,6 +24,7 @@ import com.jaredrummler.materialspinner.MaterialSpinner
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import org.koin.core.KoinComponent
 import org.koin.core.inject
 
@@ -90,13 +92,11 @@ class CalculatorFragment : Fragment(), SelectCurrencyDialogCallback, KoinCompone
         }
 
         viewModel.firstCurrency.observe(viewLifecycleOwner, Observer {
-            //selectFirstCurrency.setItems(listOf(it.nameShort))
             selectFirstCurrency.text = it.nameShort
             selectFirstCurrency.collapse()
         })
 
         viewModel.secondCurrency.observe(viewLifecycleOwner, Observer {
-            //selectSecondCurrency.setItems(listOf(it.nameShort))
             selectSecondCurrency.text = it.nameShort
             selectSecondCurrency.collapse()
         })
@@ -114,10 +114,18 @@ class CalculatorFragment : Fragment(), SelectCurrencyDialogCallback, KoinCompone
             GlobalScope.launch {
                 viewModel.calculate().collect { response ->
                     when(response.flag){
-                        CalculateResponseStatus.NOT_VALID ->
+                        CalculateResponseStatus.NOT_VALID -> requireActivity().runOnUiThread {
                             setErrorsOnNonValidData(response.data as CalculateRequestValidatorResponse)
-                        CalculateResponseStatus.FAILED -> TODO()
-                        CalculateResponseStatus.SUCCESS -> setResult(response.data as CalculateResponseData)
+                            Toast.makeText(requireContext(), "NOT VALID", Toast.LENGTH_LONG).show()
+                        }
+                        CalculateResponseStatus.FAILED -> requireActivity().runOnUiThread {
+                            Toast.makeText(requireContext(), "error", Toast.LENGTH_LONG).show()
+                        }
+                        CalculateResponseStatus.SUCCESS -> requireActivity().runOnUiThread {
+                            resetErrors()
+                            Toast.makeText(requireContext(), "SUCCESS", Toast.LENGTH_LONG).show()
+                            setResult(response.data as CalculateResponseData)
+                        }
                     }
                 }
             }
@@ -130,6 +138,12 @@ class CalculatorFragment : Fragment(), SelectCurrencyDialogCallback, KoinCompone
             "enter a valid currency!"
         if (response.isSecondCurrencyValid) selectSecondCurrency.error =
             "enter a valid currency!"
+    }
+
+    private fun resetErrors(){
+        firstCurrencyAmount.error = null
+        selectFirstCurrency.error = null
+        selectSecondCurrency.error = null
     }
 
     private fun setResult(data: CalculateResponseData) = secondCurrencyAmount.setText(data.amount.toString())

@@ -5,12 +5,10 @@ import com.gabez.yet_another_currency_converter.domain.request.CalculateRequest
 import com.gabez.yet_another_currency_converter.domain.response.CalculateResponse
 import com.gabez.yet_another_currency_converter.entities.CurrencyForView
 
-class CalculateUsecase() {
+class CalculateUsecase(private val repo: CalculatorRepository) {
     private var firstCurrency: CurrencyForView? = null
     private var secondCurrency: CurrencyForView? = null
     private var amount: Float? = 0f
-
-    private val repo: CalculatorRepository = CalculatorRepository.getInstance() as CalculatorRepository
 
     fun setFirstCurrency(value: CurrencyForView?){
         firstCurrency = value
