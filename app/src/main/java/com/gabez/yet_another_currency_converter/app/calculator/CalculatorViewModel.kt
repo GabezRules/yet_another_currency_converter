@@ -3,12 +3,19 @@ package com.gabez.yet_another_currency_converter.app.calculator
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.gabez.yet_another_currency_converter.app.calculator.calculateRequest.CalculateRequest
 import com.gabez.yet_another_currency_converter.app.calculator.calculateRequest.CalculateRequestValidator
-import com.gabez.yet_another_currency_converter.app.calculator.calculateRequest.CalculateRequestValidatorResponse
+import com.gabez.yet_another_currency_converter.domain.response.CalculateResponse
+import com.gabez.yet_another_currency_converter.domain.response.CalculateResponseStatus
+import com.gabez.yet_another_currency_converter.domain.usecases.CalculateUsecase
 import com.gabez.yet_another_currency_converter.entities.CurrencyForView
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 
-class CalculatorViewModel: ViewModel() {
+class CalculatorViewModel(private val usecase: CalculateUsecase): ViewModel() {
     private var valueToCalculate: Float? = 0f
 
     private val _firstCurrency: MutableLiveData<CurrencyForView> = MutableLiveData()
@@ -27,19 +34,29 @@ class CalculatorViewModel: ViewModel() {
 
     fun setValueToCalculate(value: Float?){
         valueToCalculate = value
+        usecase.setAmount(value)
     }
 
-    fun setFirstCurrency(value: CurrencyForView) = _firstCurrency.postValue(value)
+    fun setFirstCurrency(value: CurrencyForView) {
+        _firstCurrency.postValue(value)
+        usecase.setFirstCurrency(value)
+    }
 
-    fun setSecondCurrency(value: CurrencyForView) = _secondCurrency.postValue(value)
+    fun setSecondCurrency(value: CurrencyForView){
+        _secondCurrency.postValue(value)
+        usecase.setSecondCurrency(value)
+    }
 
-    fun calculate(): CalculateRequestValidatorResponse?{
+    fun calculate(): Flow<CalculateResponse> = flow {
         val calculateRequest = createCalculateRequest()
         val response = CalculateRequestValidator.isValid(calculateRequest)
         if(response.isValid){
-            //TODO: send request to calculate
-            return null
-        }else return response
+            viewModelScope.launch{
+                val response = usecase.invoke()
+                emit(CalculateResponse(response.flag, response))
+            }
+            emit(CalculateResponse(CalculateResponseStatus.SUCCESS, arrayListOf<Any?>()))
+        }else emit(CalculateResponse(CalculateResponseStatus.NOT_VALID, response))
     }
 
     fun swapCurrencies(){

@@ -5,8 +5,9 @@ import android.os.Bundle
 import androidx.fragment.app.Fragment
 import com.gabez.yet_another_currency_converter.R
 import com.gabez.yet_another_currency_converter.app.calculator.CalculatorFragment
+import org.koin.core.KoinComponent
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), KoinComponent {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)

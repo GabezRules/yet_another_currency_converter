@@ -17,9 +17,11 @@ import com.gabez.yet_another_currency_converter.entities.CurrencyForView
 import com.gabez.yet_another_currency_converter.app.selectFromAllCurrencies.currencyList.AllCurrenciesListAdapter
 import com.gabez.yet_another_currency_converter.app.selectFromAllCurrencies.currencyList.CurrencyListCallback
 import com.google.android.material.textfield.TextInputEditText
+import org.koin.core.KoinComponent
+import org.koin.core.inject
 
 class SelectCurrencyDialogFragment(private val callback: SelectCurrencyDialogCallback, private val spinnerIndex: CurrencySpinnerIndex) : DialogFragment(),
-    CurrencyListCallback {
+    CurrencyListCallback, KoinComponent {
 
     lateinit var allCurrenciesRecyclerView: RecyclerView
     private lateinit var searchBar: TextInputEditText
@@ -28,7 +30,7 @@ class SelectCurrencyDialogFragment(private val callback: SelectCurrencyDialogCal
 
     lateinit var adapter: AllCurrenciesListAdapter
 
-    private val viewModel = SelectCurrencyViewModel()
+    private val viewModel: SelectCurrencyViewModel by inject()
 
     private var currencyList: MutableLiveData<List<CurrencyForView>> = MutableLiveData(listOf())
 
