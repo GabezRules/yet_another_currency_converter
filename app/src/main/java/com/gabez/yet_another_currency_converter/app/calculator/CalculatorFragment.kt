@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ProgressBar
 import android.widget.TextView
+import android.widget.Toast
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
@@ -14,8 +15,7 @@ import com.gabez.yet_another_currency_converter.app.calculator.calculateRequest.
 import com.gabez.yet_another_currency_converter.app.selectFromAllCurrencies.CurrencySpinnerIndex
 import com.gabez.yet_another_currency_converter.app.selectFromAllCurrencies.SelectCurrencyDialogCallback
 import com.gabez.yet_another_currency_converter.app.selectFromAllCurrencies.SelectCurrencyDialogFragment
-import com.gabez.yet_another_currency_converter.domain.response.CalculateResponseData
-import com.gabez.yet_another_currency_converter.domain.response.CalculateResponseStatus
+import com.gabez.yet_another_currency_converter.data.apiService.responses.ResponseStatus
 import com.gabez.yet_another_currency_converter.entities.CurrencyForView
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.textfield.TextInputEditText
@@ -90,13 +90,11 @@ class CalculatorFragment : Fragment(), SelectCurrencyDialogCallback, KoinCompone
         }
 
         viewModel.firstCurrency.observe(viewLifecycleOwner, Observer {
-            //selectFirstCurrency.setItems(listOf(it.nameShort))
             selectFirstCurrency.text = it.nameShort
             selectFirstCurrency.collapse()
         })
 
         viewModel.secondCurrency.observe(viewLifecycleOwner, Observer {
-            //selectSecondCurrency.setItems(listOf(it.nameShort))
             selectSecondCurrency.text = it.nameShort
             selectSecondCurrency.collapse()
         })
@@ -114,10 +112,17 @@ class CalculatorFragment : Fragment(), SelectCurrencyDialogCallback, KoinCompone
             GlobalScope.launch {
                 viewModel.calculate().collect { response ->
                     when(response.flag){
-                        CalculateResponseStatus.NOT_VALID ->
-                            setErrorsOnNonValidData(response.data as CalculateRequestValidatorResponse)
-                        CalculateResponseStatus.FAILED -> TODO()
-                        CalculateResponseStatus.SUCCESS -> setResult(response.data as CalculateResponseData)
+                        ResponseStatus.NOT_VALID -> requireActivity().runOnUiThread {
+                            setErrorsOnNonValidData(response.error as CalculateRequestValidatorResponse)
+                            Toast.makeText(requireContext(), "data is not valid", Toast.LENGTH_LONG).show()
+                        }
+                        ResponseStatus.FAILED -> requireActivity().runOnUiThread {
+                            Toast.makeText(requireContext(), response.error.toString(), Toast.LENGTH_LONG).show()
+                        }
+                        ResponseStatus.SUCCESS -> requireActivity().runOnUiThread {
+                            resetErrors()
+                            setResult(response.amount!!)
+                        }
                     }
                 }
             }
@@ -132,10 +137,19 @@ class CalculatorFragment : Fragment(), SelectCurrencyDialogCallback, KoinCompone
             "enter a valid currency!"
     }
 
-    private fun setResult(data: CalculateResponseData) = secondCurrencyAmount.setText(data.amount.toString())
+    private fun resetErrors(){
+        firstCurrencyAmount.error = null
+        selectFirstCurrency.error = null
+        selectSecondCurrency.error = null
+    }
+
+    private fun setResult(data: Float) = secondCurrencyAmount.setText(data.toString())
 
     private fun setupSwapCurrencies() {
-        swapCurrencies.setOnClickListener { viewModel.swapCurrencies() }
+        swapCurrencies.setOnClickListener {
+            viewModel.swapCurrencies()
+            secondCurrencyAmount.setText("")
+        }
     }
 
     private fun setupLoadingObserver() {
@@ -145,8 +159,8 @@ class CalculatorFragment : Fragment(), SelectCurrencyDialogCallback, KoinCompone
     }
 
     private fun setupInternetWarningObserver() {
-        viewModel.showInternetWarning.observe(viewLifecycleOwner, { showError ->
-            noInternetWarning.visibility = if (showError) View.VISIBLE else View.GONE
+        viewModel.hasInternet.observe(viewLifecycleOwner, { hasInternet ->
+            noInternetWarning.visibility = if (hasInternet) View.INVISIBLE else View.VISIBLE
         })
     }
 
