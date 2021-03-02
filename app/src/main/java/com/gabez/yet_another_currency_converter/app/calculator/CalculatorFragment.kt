@@ -15,8 +15,9 @@ import com.gabez.yet_another_currency_converter.app.calculator.calculateRequest.
 import com.gabez.yet_another_currency_converter.app.selectFromAllCurrencies.CurrencySpinnerIndex
 import com.gabez.yet_another_currency_converter.app.selectFromAllCurrencies.SelectCurrencyDialogCallback
 import com.gabez.yet_another_currency_converter.app.selectFromAllCurrencies.SelectCurrencyDialogFragment
-import com.gabez.yet_another_currency_converter.domain.response.CalculateResponseData
-import com.gabez.yet_another_currency_converter.domain.response.ResponseStatus
+import com.gabez.yet_another_currency_converter.data.apiService.responses.CalculateResponse
+import com.gabez.yet_another_currency_converter.data.apiService.responses.CalculateResponseData
+import com.gabez.yet_another_currency_converter.data.apiService.responses.ResponseStatus
 import com.gabez.yet_another_currency_converter.entities.CurrencyForView
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.textfield.TextInputEditText
@@ -123,7 +124,7 @@ class CalculatorFragment : Fragment(), SelectCurrencyDialogCallback, KoinCompone
                         ResponseStatus.SUCCESS -> requireActivity().runOnUiThread {
                             resetErrors()
                             Toast.makeText(requireContext(), "SUCCESS", Toast.LENGTH_LONG).show()
-                            setResult(response.data as CalculateResponseData)
+                            setResult((response.data as CalculateResponse).data as CalculateResponseData)
                         }
                     }
                 }

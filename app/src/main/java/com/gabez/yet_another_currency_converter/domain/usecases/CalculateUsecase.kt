@@ -2,7 +2,7 @@ package com.gabez.yet_another_currency_converter.domain.usecases
 
 import com.gabez.yet_another_currency_converter.domain.CalculatorRepository
 import com.gabez.yet_another_currency_converter.domain.request.CalculateRequest
-import com.gabez.yet_another_currency_converter.domain.response.CalculateResponse
+import com.gabez.yet_another_currency_converter.data.apiService.responses.CalculateResponse
 import com.gabez.yet_another_currency_converter.entities.CurrencyForView
 
 class CalculateUsecase(private val repo: CalculatorRepository) {

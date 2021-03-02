@@ -1,4 +1,4 @@
-package com.gabez.yet_another_currency_converter.networkTests
+package com.gabez.yet_another_currency_converter
 
 import com.gabez.yet_another_currency_converter.domain.calculations.CalculationsHelper
 import org.junit.Assert.assertEquals

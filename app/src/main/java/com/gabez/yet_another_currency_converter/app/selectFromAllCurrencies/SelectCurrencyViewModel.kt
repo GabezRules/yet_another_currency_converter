@@ -3,11 +3,9 @@ package com.gabez.yet_another_currency_converter.app.selectFromAllCurrencies
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.gabez.yet_another_currency_converter.data.entities.CurrencyFromApi
 import com.gabez.yet_another_currency_converter.domain.response.GetAllCurrenciesResponse
-import com.gabez.yet_another_currency_converter.domain.response.ResponseStatus
-import com.gabez.yet_another_currency_converter.domain.usecases.CalculateUsecase
+import com.gabez.yet_another_currency_converter.data.apiService.responses.ResponseStatus
 import com.gabez.yet_another_currency_converter.domain.usecases.GetAllCurrenciesUsecase
 import com.gabez.yet_another_currency_converter.entities.CurrencyForView
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -15,7 +13,6 @@ import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.channels.sendBlocking
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.channelFlow
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 
 class SelectCurrencyViewModel(private val usecase: GetAllCurrenciesUsecase) : ViewModel() {
@@ -64,8 +61,8 @@ class SelectCurrencyViewModel(private val usecase: GetAllCurrenciesUsecase) : Vi
 
     fun CurrencyFromApi.toCurrencyForView(): CurrencyForView {
         return CurrencyForView(
-            nameShort = this.Currency,
-            nameLong = this.Code
+            nameShort = this.currency,
+            nameLong = this.code
         )
     }
 }

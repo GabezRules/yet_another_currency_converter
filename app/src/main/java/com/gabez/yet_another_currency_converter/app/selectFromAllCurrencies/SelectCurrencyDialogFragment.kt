@@ -1,6 +1,7 @@
 package com.gabez.yet_another_currency_converter.app.selectFromAllCurrencies
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -16,7 +17,7 @@ import com.gabez.yet_another_currency_converter.app.selectFromAllCurrencies.curr
 import com.gabez.yet_another_currency_converter.app.selectFromAllCurrencies.currencyList.CurrencyListCallback
 import com.gabez.yet_another_currency_converter.entities.CurrencyForView
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
-import com.gabez.yet_another_currency_converter.domain.response.ResponseStatus
+import com.gabez.yet_another_currency_converter.data.apiService.responses.ResponseStatus
 import com.google.android.material.textfield.TextInputEditText
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.GlobalScope
@@ -87,10 +88,15 @@ class SelectCurrencyDialogFragment(
     @InternalCoroutinesApi
     private fun getCurrencyList() {
         nothingFoundText.text = "Nothing found..."
+        Log.v("CURRENCIES", "starting...")
         GlobalScope.launch {
             viewModel.getCurrencies().collect { response ->
                 when(response.flag){
-                    ResponseStatus.SUCCESS -> currencyList.postValue(response.data as List<CurrencyForView>)
+                    ResponseStatus.SUCCESS -> {
+                        currencyList.postValue(response.data as List<CurrencyForView>)
+                        Log.v("CURRENCIES", response.data.toString())
+                        (response.data as List<CurrencyForView>).map { item -> Log.v("CURRENCIES", item.nameShort) }
+                    }
                     ResponseStatus.FAILED -> nothingFoundText.text = response.data.toString()
                 }
             }

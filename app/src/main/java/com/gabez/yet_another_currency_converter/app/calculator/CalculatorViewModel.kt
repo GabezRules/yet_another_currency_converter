@@ -6,11 +6,15 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.gabez.yet_another_currency_converter.app.calculator.calculateRequest.ValidateRequest
 import com.gabez.yet_another_currency_converter.app.calculator.calculateRequest.CalculateRequestValidator
-import com.gabez.yet_another_currency_converter.domain.response.CalculateResponse
-import com.gabez.yet_another_currency_converter.domain.response.ResponseStatus
+import com.gabez.yet_another_currency_converter.data.apiService.responses.CalculateResponse
+import com.gabez.yet_another_currency_converter.data.apiService.responses.ResponseStatus
 import com.gabez.yet_another_currency_converter.domain.usecases.CalculateUsecase
 import com.gabez.yet_another_currency_converter.entities.CurrencyForView
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.channels.sendBlocking
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.channelFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 
@@ -46,16 +50,23 @@ class CalculatorViewModel(private val usecase: CalculateUsecase): ViewModel() {
         usecase.setSecondCurrency(value)
     }
 
-    fun calculate(): Flow<CalculateResponse> = flow {
+    @ExperimentalCoroutinesApi
+    fun calculate(): Flow<CalculateResponse> = channelFlow {
         val calculateRequest = createCalculateRequest()
         val response = CalculateRequestValidator.isValid(calculateRequest)
         if(response.isValid){
             _isLoading.postValue(true)
             viewModelScope.launch{
                 val res = usecase.invoke()
-                emit(CalculateResponse(res.flag, res))
+                sendBlocking(CalculateResponse(res.flag, res))
+                close()
             }.invokeOnCompletion { _isLoading.postValue(false) }
-        }else emit(CalculateResponse(ResponseStatus.NOT_VALID, response))
+        }else {
+            sendBlocking(CalculateResponse(ResponseStatus.NOT_VALID, response))
+            close()
+        }
+
+        awaitClose()
     }
 
     fun swapCurrencies(){
