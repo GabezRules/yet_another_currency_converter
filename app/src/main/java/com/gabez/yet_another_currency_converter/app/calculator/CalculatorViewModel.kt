@@ -58,11 +58,11 @@ class CalculatorViewModel(private val usecase: CalculateUsecase): ViewModel() {
             _isLoading.postValue(true)
             viewModelScope.launch{
                 val res = usecase.invoke()
-                sendBlocking(CalculateResponse(res.flag, res))
+                sendBlocking(res)
                 close()
             }.invokeOnCompletion { _isLoading.postValue(false) }
         }else {
-            sendBlocking(CalculateResponse(ResponseStatus.NOT_VALID, response))
+            sendBlocking(CalculateResponse(ResponseStatus.NOT_VALID, null, response))
             close()
         }
 

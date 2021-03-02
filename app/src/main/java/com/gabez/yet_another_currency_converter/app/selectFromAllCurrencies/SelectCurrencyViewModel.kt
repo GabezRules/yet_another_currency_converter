@@ -3,8 +3,8 @@ package com.gabez.yet_another_currency_converter.app.selectFromAllCurrencies
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.gabez.yet_another_currency_converter.data.entities.CurrencyFromApi
-import com.gabez.yet_another_currency_converter.domain.response.GetAllCurrenciesResponse
+import com.gabez.yet_another_currency_converter.data.apiService.entities.CurrencyFromAPI
+import com.gabez.yet_another_currency_converter.data.apiService.responses.GetAllCurrenciesResponse
 import com.gabez.yet_another_currency_converter.data.apiService.responses.ResponseStatus
 import com.gabez.yet_another_currency_converter.domain.usecases.GetAllCurrenciesUsecase
 import com.gabez.yet_another_currency_converter.entities.CurrencyForView
@@ -43,7 +43,7 @@ class SelectCurrencyViewModel(private val usecase: GetAllCurrenciesUsecase) : Vi
                 _isLoading.postValue(false)
                 val mappedResponse = GetAllCurrenciesResponse(
                     flag = ResponseStatus.SUCCESS,
-                    data = (response.data as List<CurrencyFromApi>).map { currencyFromApi -> currencyFromApi.toCurrencyForView() }
+                    data = (response.data as List<CurrencyFromAPI>).map { currencyFromApi -> currencyFromApi.toCurrencyForView() }
                 )
                 sendBlocking(mappedResponse)
                 close()
@@ -59,7 +59,7 @@ class SelectCurrencyViewModel(private val usecase: GetAllCurrenciesUsecase) : Vi
 
     }
 
-    fun CurrencyFromApi.toCurrencyForView(): CurrencyForView {
+    fun CurrencyFromAPI.toCurrencyForView(): CurrencyForView {
         return CurrencyForView(
             nameShort = this.currency,
             nameLong = this.code

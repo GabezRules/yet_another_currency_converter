@@ -7,7 +7,7 @@ import com.gabez.yet_another_currency_converter.data.dataSources.providers.Remot
 import com.gabez.yet_another_currency_converter.domain.CalculatorRepository
 import com.gabez.yet_another_currency_converter.domain.request.CalculateRequest
 import com.gabez.yet_another_currency_converter.data.apiService.responses.CalculateResponse
-import com.gabez.yet_another_currency_converter.domain.response.GetAllCurrenciesResponse
+import com.gabez.yet_another_currency_converter.data.apiService.responses.GetAllCurrenciesResponse
 import com.gabez.yet_another_currency_converter.internetConnection.InternetConnectionHelper
 
 class CalculatorRepositoryImpl : CalculatorRepository {

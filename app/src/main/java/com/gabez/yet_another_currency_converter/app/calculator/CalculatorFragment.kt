@@ -15,8 +15,6 @@ import com.gabez.yet_another_currency_converter.app.calculator.calculateRequest.
 import com.gabez.yet_another_currency_converter.app.selectFromAllCurrencies.CurrencySpinnerIndex
 import com.gabez.yet_another_currency_converter.app.selectFromAllCurrencies.SelectCurrencyDialogCallback
 import com.gabez.yet_another_currency_converter.app.selectFromAllCurrencies.SelectCurrencyDialogFragment
-import com.gabez.yet_another_currency_converter.data.apiService.responses.CalculateResponse
-import com.gabez.yet_another_currency_converter.data.apiService.responses.CalculateResponseData
 import com.gabez.yet_another_currency_converter.data.apiService.responses.ResponseStatus
 import com.gabez.yet_another_currency_converter.entities.CurrencyForView
 import com.google.android.material.button.MaterialButton
@@ -115,16 +113,16 @@ class CalculatorFragment : Fragment(), SelectCurrencyDialogCallback, KoinCompone
                 viewModel.calculate().collect { response ->
                     when(response.flag){
                         ResponseStatus.NOT_VALID -> requireActivity().runOnUiThread {
-                            setErrorsOnNonValidData(response.data as CalculateRequestValidatorResponse)
+                            setErrorsOnNonValidData(response.error as CalculateRequestValidatorResponse)
                             Toast.makeText(requireContext(), "NOT VALID", Toast.LENGTH_LONG).show()
                         }
                         ResponseStatus.FAILED -> requireActivity().runOnUiThread {
-                            Toast.makeText(requireContext(), "error", Toast.LENGTH_LONG).show()
+                            Toast.makeText(requireContext(), response.error.toString(), Toast.LENGTH_LONG).show()
                         }
                         ResponseStatus.SUCCESS -> requireActivity().runOnUiThread {
                             resetErrors()
                             Toast.makeText(requireContext(), "SUCCESS", Toast.LENGTH_LONG).show()
-                            setResult((response.data as CalculateResponse).data as CalculateResponseData)
+                            setResult(response.amount!!)
                         }
                     }
                 }
@@ -146,10 +144,13 @@ class CalculatorFragment : Fragment(), SelectCurrencyDialogCallback, KoinCompone
         selectSecondCurrency.error = null
     }
 
-    private fun setResult(data: CalculateResponseData) = secondCurrencyAmount.setText(data.amount.toString())
+    private fun setResult(data: Float) = secondCurrencyAmount.setText(data.toString())
 
     private fun setupSwapCurrencies() {
-        swapCurrencies.setOnClickListener { viewModel.swapCurrencies() }
+        swapCurrencies.setOnClickListener {
+            viewModel.swapCurrencies()
+            secondCurrencyAmount.setText("")
+        }
     }
 
     private fun setupLoadingObserver() {
