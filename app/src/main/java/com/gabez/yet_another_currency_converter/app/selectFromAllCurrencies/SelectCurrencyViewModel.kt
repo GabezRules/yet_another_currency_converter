@@ -41,11 +41,7 @@ class SelectCurrencyViewModel(private val usecase: GetAllCurrenciesUsecase) : Vi
             }
             ResponseStatus.SUCCESS -> launch {
                 _isLoading.postValue(false)
-                val mappedResponse = GetAllCurrenciesResponse(
-                    flag = ResponseStatus.SUCCESS,
-                    data = (response.data as List<CurrencyFromAPI>).map { currencyFromApi -> currencyFromApi.toCurrencyForView() }
-                )
-                sendBlocking(mappedResponse)
+                sendBlocking(response)
                 close()
             }
             else -> launch {
@@ -57,12 +53,5 @@ class SelectCurrencyViewModel(private val usecase: GetAllCurrenciesUsecase) : Vi
 
         awaitClose()
 
-    }
-
-    fun CurrencyFromAPI.toCurrencyForView(): CurrencyForView {
-        return CurrencyForView(
-            nameShort = this.currency,
-            nameLong = this.code
-        )
     }
 }

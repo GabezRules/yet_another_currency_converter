@@ -114,14 +114,13 @@ class CalculatorFragment : Fragment(), SelectCurrencyDialogCallback, KoinCompone
                     when(response.flag){
                         ResponseStatus.NOT_VALID -> requireActivity().runOnUiThread {
                             setErrorsOnNonValidData(response.error as CalculateRequestValidatorResponse)
-                            Toast.makeText(requireContext(), "NOT VALID", Toast.LENGTH_LONG).show()
+                            Toast.makeText(requireContext(), "data is not valid", Toast.LENGTH_LONG).show()
                         }
                         ResponseStatus.FAILED -> requireActivity().runOnUiThread {
                             Toast.makeText(requireContext(), response.error.toString(), Toast.LENGTH_LONG).show()
                         }
                         ResponseStatus.SUCCESS -> requireActivity().runOnUiThread {
                             resetErrors()
-                            Toast.makeText(requireContext(), "SUCCESS", Toast.LENGTH_LONG).show()
                             setResult(response.amount!!)
                         }
                     }

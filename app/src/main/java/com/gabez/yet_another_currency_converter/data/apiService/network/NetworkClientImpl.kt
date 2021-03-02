@@ -9,6 +9,7 @@ import com.gabez.yet_another_currency_converter.data.apiService.responses.GetCur
 import com.gabez.yet_another_currency_converter.data.apiService.responses.GetAllCurrenciesResponse
 import com.gabez.yet_another_currency_converter.data.apiService.responses.ResponseStatus
 import com.gabez.yet_another_currency_converter.data.apiService.entities.RateInCurrencyFromAPI
+import com.gabez.yet_another_currency_converter.entities.CurrencyForView
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import retrofit2.Retrofit
 import retrofit2.awaitResponse
@@ -85,11 +86,11 @@ class NetworkClientImpl : NetworkClient {
 
             GetAllCurrenciesResponse(
                 flag = ResponseStatus.SUCCESS,
-                data = allCurrencies
+                data = allCurrencies.map { item -> item.toCurrencyForView() }
             )
         } else GetAllCurrenciesResponse(
             flag = ResponseStatus.FAILED,
-            data = currenciesFromA.errorBody().toString() + " " + currenciesFromB.errorBody()
+            error = currenciesFromA.errorBody().toString() + " " + currenciesFromB.errorBody()
                 .toString()
         )
     }
@@ -122,5 +123,12 @@ class NetworkClientImpl : NetworkClient {
                 error = currencyFromA.raw().code().toString() + " " + currencyFromA.message()
             )
         }
+    }
+
+    fun CurrencyFromAPI.toCurrencyForView(): CurrencyForView {
+        return CurrencyForView(
+            nameShort = this.currency,
+            nameLong = this.code
+        )
     }
 }

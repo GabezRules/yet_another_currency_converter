@@ -20,8 +20,7 @@ class LocalDatasourceImpl: LocalDatasource {
 
         //TODO: Implement
         return GetAllCurrenciesResponse(
-            flag = ResponseStatus.NOT_VALID,
-            data = ""
+            flag = ResponseStatus.NOT_VALID
         )
     }
 }

@@ -1,3 +1,5 @@
 package com.gabez.yet_another_currency_converter.data.apiService.responses
 
-data class GetAllCurrenciesResponse(val flag: ResponseStatus, val data: Any)
+import com.gabez.yet_another_currency_converter.entities.CurrencyForView
+
+data class GetAllCurrenciesResponse(val flag: ResponseStatus, val data: List<CurrencyForView>? = null, var error: Any? = null)
