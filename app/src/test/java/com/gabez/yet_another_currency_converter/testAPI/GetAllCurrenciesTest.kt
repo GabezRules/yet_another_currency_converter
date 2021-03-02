@@ -9,8 +9,8 @@ class GetAllCurrenciesTest {
 
     @Test fun getAllCurrencies() {
         runBlocking {
-            val response = NetworkClientImpl().getAllCurrencies()
-            assertEquals(response.data.toString(), "this shouldn't work")
+            val response = NetworkClientImpl().getAllCurrencies().data!![0]
+            assertEquals(response.mid.toString(), "this shouldn't work")
         }
     }
 }

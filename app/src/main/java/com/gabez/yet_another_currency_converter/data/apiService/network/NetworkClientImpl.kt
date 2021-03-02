@@ -48,6 +48,7 @@ class NetworkClientImpl : NetworkClient {
                 amount = result,
                 error = null
             )
+
         } else CalculateResponse(
             flag = ResponseStatus.FAILED,
             amount = null,
@@ -128,7 +129,8 @@ class NetworkClientImpl : NetworkClient {
     fun CurrencyFromAPI.toCurrencyForView(): CurrencyForView {
         return CurrencyForView(
             code = this.currency,
-            currencyName = this.code
+            currencyName = this.code,
+            mid = this.rates[0].mid
         )
     }
 }

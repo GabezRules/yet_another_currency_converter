@@ -4,8 +4,10 @@ import com.gabez.yet_another_currency_converter.domain.request.CalculateRequest
 import com.gabez.yet_another_currency_converter.data.apiService.responses.CalculateResponse
 import com.gabez.yet_another_currency_converter.data.apiService.responses.GetAllCurrenciesResponse
 import com.gabez.yet_another_currency_converter.data.apiService.responses.ResponseStatus
+import com.gabez.yet_another_currency_converter.data.localDb.CurrencyDatabase
 
-class LocalDatasourceImpl: LocalDatasource {
+class LocalDatasourceImpl(private val localDb: CurrencyDatabase ): LocalDatasource {
+
     override suspend fun calculate(request: CalculateRequest): CalculateResponse {
 
         //TODO: Implement
@@ -17,10 +19,9 @@ class LocalDatasourceImpl: LocalDatasource {
     }
 
     override suspend fun getCurrencies(): GetAllCurrenciesResponse {
-
-        //TODO: Implement
         return GetAllCurrenciesResponse(
-            flag = ResponseStatus.NOT_VALID
+            flag = ResponseStatus.SUCCESS,
+            data = localDb.dao().getAllMinimalCurrencies()
         )
     }
 }

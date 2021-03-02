@@ -109,21 +109,24 @@ class CalculatorFragment : Fragment(), SelectCurrencyDialogCallback, KoinCompone
 
     private fun setupCalculateButton() {
         calculateButton.setOnClickListener {
-            GlobalScope.launch {
-                viewModel.calculate().collect { response ->
-                    when(response.flag){
-                        ResponseStatus.NOT_VALID -> requireActivity().runOnUiThread {
-                            setErrorsOnNonValidData(response.error as CalculateRequestValidatorResponse)
-                            Toast.makeText(requireContext(), "data is not valid", Toast.LENGTH_LONG).show()
-                        }
-                        ResponseStatus.FAILED -> requireActivity().runOnUiThread {
-                            Toast.makeText(requireContext(), response.error.toString(), Toast.LENGTH_LONG).show()
-                        }
-                        ResponseStatus.SUCCESS -> requireActivity().runOnUiThread {
-                            resetErrors()
-                            setResult(response.amount!!)
-                        }
-                    }
+            val response = viewModel.calculate()
+
+            when (response.flag) {
+                ResponseStatus.NOT_VALID -> requireActivity().runOnUiThread {
+                    setErrorsOnNonValidData(response.error as CalculateRequestValidatorResponse)
+                    Toast.makeText(requireContext(), "data is not valid", Toast.LENGTH_LONG)
+                        .show()
+                }
+                ResponseStatus.FAILED -> requireActivity().runOnUiThread {
+                    Toast.makeText(
+                        requireContext(),
+                        response.error.toString(),
+                        Toast.LENGTH_LONG
+                    ).show()
+                }
+                ResponseStatus.SUCCESS -> requireActivity().runOnUiThread {
+                    resetErrors()
+                    setResult(response.amount!!)
                 }
             }
         }
@@ -137,7 +140,7 @@ class CalculatorFragment : Fragment(), SelectCurrencyDialogCallback, KoinCompone
             "enter a valid currency!"
     }
 
-    private fun resetErrors(){
+    private fun resetErrors() {
         firstCurrencyAmount.error = null
         selectFirstCurrency.error = null
         selectSecondCurrency.error = null
