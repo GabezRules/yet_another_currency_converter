@@ -11,15 +11,17 @@ import com.gabez.yet_another_currency_converter.data.localDb.CurrencyDatabase
 import com.gabez.yet_another_currency_converter.domain.CalculatorRepository
 import com.gabez.yet_another_currency_converter.domain.usecases.CalculateUsecase
 import com.gabez.yet_another_currency_converter.domain.usecases.GetAllCurrenciesUsecase
+import com.gabez.yet_another_currency_converter.domain.usecases.MarkCurrencyUsecase
 import com.gabez.yet_another_currency_converter.internetConnection.InternetConnectionMonitor
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
 val appModule = module {
     viewModel { CalculatorViewModel(get(), get()) }
-    viewModel { SelectCurrencyViewModel(get()) }
+    viewModel { SelectCurrencyViewModel(get(), get()) }
 
     single { GetAllCurrenciesUsecase(get(), get()) }
+    single { MarkCurrencyUsecase(get()) }
     single { CalculatorRepositoryImpl(get()) as CalculatorRepository }
 
     single { LocalDatasourceImpl(get()) as LocalDatasource }

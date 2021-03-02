@@ -1,5 +1,6 @@
 package com.gabez.yet_another_currency_converter.app.selectFromAllCurrencies.currencyList
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -34,10 +35,14 @@ class AllCurrenciesListAdapter(private val callback: CurrencyListCallback) :
 
         if (currency.isFavourite) {
             holder.isFav.setImageResource(R.drawable.ic_star_full)
-            holder.isFav.setOnClickListener { callback.unmarkCurrency(currency) }
+            holder.isFav.setOnClickListener {
+                callback.unmarkCurrency(currency)
+            }
         } else {
             holder.isFav.setImageResource(R.drawable.ic_star_empty)
-            holder.isFav.setOnClickListener { callback.markCurrency(currency) }
+            holder.isFav.setOnClickListener {
+                callback.markCurrency(currency)
+            }
         }
 
         holder.container.setOnClickListener {
