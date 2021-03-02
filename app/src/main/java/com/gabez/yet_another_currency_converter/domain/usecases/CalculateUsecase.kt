@@ -23,8 +23,8 @@ class CalculateUsecase(private val repo: CalculatorRepository) {
     }
 
     suspend fun invoke(): CalculateResponse = repo.calculate(CalculateRequest(
-        firstCurrencyShortName = firstCurrency!!.nameShort,
-        secondCurrencyShortName = secondCurrency!!.nameShort,
+        firstCurrencyShortName = firstCurrency!!.code,
+        secondCurrencyShortName = secondCurrency!!.code,
         amount = amount!!
     ))
 }

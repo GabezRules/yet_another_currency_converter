@@ -29,8 +29,8 @@ class AllCurrenciesListAdapter(private val callback: CurrencyListCallback) :
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val currency = data[position]
-        holder.currencyShortName.text = currency.nameShort
-        holder.currencyLongName.text = currency.nameLong
+        holder.currencyShortName.text = currency.code
+        holder.currencyLongName.text = currency.currencyName
 
         if (currency.isFavourite) {
             holder.isFav.setImageResource(R.drawable.ic_star_full)

@@ -127,8 +127,8 @@ class NetworkClientImpl : NetworkClient {
 
     fun CurrencyFromAPI.toCurrencyForView(): CurrencyForView {
         return CurrencyForView(
-            nameShort = this.currency,
-            nameLong = this.code
+            code = this.currency,
+            currencyName = this.code
         )
     }
 }

@@ -95,7 +95,7 @@ class SelectCurrencyDialogFragment(
                     ResponseStatus.SUCCESS -> {
                         currencyList.postValue(response.data as List<CurrencyForView>)
                         Log.v("CURRENCIES", response.data.toString())
-                        (response.data as List<CurrencyForView>).map { item -> Log.v("CURRENCIES", item.nameShort) }
+                        (response.data as List<CurrencyForView>).map { item -> Log.v("CURRENCIES", item.code) }
                     }
                     ResponseStatus.FAILED -> nothingFoundText.text = response.data.toString()
                 }
@@ -128,8 +128,8 @@ class SelectCurrencyDialogFragment(
     private fun setupSearch() {
         searchBar.doOnTextChanged { text, _, _, _ ->
             val newList: List<CurrencyForView> = currencyList.value!!.filter { currencyItem ->
-                (getUniversalText(currencyItem.nameShort).contains(getUniversalText(text))
-                        || getUniversalText(currencyItem.nameLong).contains(getUniversalText(text)))
+                (getUniversalText(currencyItem.code).contains(getUniversalText(text))
+                        || getUniversalText(currencyItem.currencyName).contains(getUniversalText(text)))
             }
 
             currencyList.value = newList

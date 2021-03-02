@@ -90,12 +90,12 @@ class CalculatorFragment : Fragment(), SelectCurrencyDialogCallback, KoinCompone
         }
 
         viewModel.firstCurrency.observe(viewLifecycleOwner, Observer {
-            selectFirstCurrency.text = it.nameShort
+            selectFirstCurrency.text = it.code
             selectFirstCurrency.collapse()
         })
 
         viewModel.secondCurrency.observe(viewLifecycleOwner, Observer {
-            selectSecondCurrency.text = it.nameShort
+            selectSecondCurrency.text = it.code
             selectSecondCurrency.collapse()
         })
     }
