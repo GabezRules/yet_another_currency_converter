@@ -5,6 +5,7 @@ import com.gabez.yet_another_currency_converter.data.apiService.responses.Calcul
 import com.gabez.yet_another_currency_converter.data.apiService.responses.GetAllCurrenciesResponse
 import com.gabez.yet_another_currency_converter.data.apiService.responses.ResponseStatus
 import com.gabez.yet_another_currency_converter.data.localDb.CurrencyDatabase
+import com.gabez.yet_another_currency_converter.entities.CurrencyForView
 
 class LocalDatasourceImpl(private val localDb: CurrencyDatabase ): LocalDatasource {
 
@@ -21,7 +22,13 @@ class LocalDatasourceImpl(private val localDb: CurrencyDatabase ): LocalDatasour
     override suspend fun getCurrencies(): GetAllCurrenciesResponse {
         return GetAllCurrenciesResponse(
             flag = ResponseStatus.SUCCESS,
-            data = localDb.dao().getAllMinimalCurrencies()
+            data = localDb.dao().getAllCurrencies().map { currencyEntity ->
+                CurrencyForView(
+                    code = currencyEntity.code,
+                    currencyName = currencyEntity.currencyName,
+                    mid = currencyEntity.mid,
+                    isFavourite = currencyEntity.isFavourite
+            ) }
         )
     }
 }

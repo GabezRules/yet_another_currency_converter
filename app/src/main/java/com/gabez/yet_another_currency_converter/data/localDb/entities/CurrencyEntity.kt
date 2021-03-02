@@ -8,7 +8,5 @@ data class CurrencyEntity(
     @PrimaryKey
     val currencyName: String = "",
     val code: String = "",
-    val no: String,
-    val effectiveDate: String,
     val isFavourite: Boolean = false,
     val mid: Float)

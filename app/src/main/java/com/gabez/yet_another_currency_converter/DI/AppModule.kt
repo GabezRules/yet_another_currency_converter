@@ -3,6 +3,8 @@ package com.gabez.yet_another_currency_converter.DI
 import com.gabez.yet_another_currency_converter.app.calculator.CalculatorViewModel
 import com.gabez.yet_another_currency_converter.app.selectFromAllCurrencies.SelectCurrencyViewModel
 import com.gabez.yet_another_currency_converter.data.CalculatorRepositoryImpl
+import com.gabez.yet_another_currency_converter.data.apiService.network.NetworkClient
+import com.gabez.yet_another_currency_converter.data.apiService.network.NetworkClientImpl
 import com.gabez.yet_another_currency_converter.data.dataSources.LocalDatasource
 import com.gabez.yet_another_currency_converter.data.dataSources.LocalDatasourceImpl
 import com.gabez.yet_another_currency_converter.data.localDb.CurrencyDatabase
@@ -21,6 +23,7 @@ val appModule = module {
     single { CalculatorRepositoryImpl(get()) as CalculatorRepository }
 
     single { LocalDatasourceImpl(get()) as LocalDatasource }
+    single { NetworkClientImpl() as NetworkClient }
 
     single { CurrencyDatabase.getInstance(get()) }
 

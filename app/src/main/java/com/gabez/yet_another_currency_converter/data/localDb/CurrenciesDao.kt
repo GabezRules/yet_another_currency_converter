@@ -9,14 +9,8 @@ interface CurrenciesDao {
     @Query("SELECT * FROM currency")
     fun getAllCurrencies(): List<CurrencyEntity>
 
-    @Query("SELECT currencyName, code, isFavourite, mid FROM currency")
-    fun getAllMinimalCurrencies(): List<CurrencyForView>
-
     @Query("SELECT * FROM currency WHERE currencyName LIKE :currency AND code LIKE :code")
     fun getCurrency(currency: String, code: String): CurrencyEntity
-
-    @Query("SELECT currencyName, code, isFavourite, mid FROM currency WHERE currencyName LIKE :currency AND code LIKE :code")
-    fun getMinimalCurrency(currency: String, code: String): CurrencyForView
 
     @Insert
     fun insertAll(users: List<CurrencyEntity>)
