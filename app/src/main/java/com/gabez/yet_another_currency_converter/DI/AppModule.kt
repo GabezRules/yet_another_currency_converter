@@ -10,7 +10,7 @@ import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
 val appModule = module {
-    viewModel { CalculatorViewModel(get()) }
+    viewModel { CalculatorViewModel(get(), get()) }
     viewModel { SelectCurrencyViewModel(get()) }
 
     single{ CalculateUsecase(get()) }

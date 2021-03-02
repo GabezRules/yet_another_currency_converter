@@ -1,4 +1,4 @@
-package com.gabez.yet_another_currency_converter.networkTests
+package com.gabez.yet_another_currency_converter.testAPI
 
 import com.gabez.yet_another_currency_converter.data.apiService.network.NetworkClientImpl
 import com.gabez.yet_another_currency_converter.data.apiService.entities.CurrencyFromAPI

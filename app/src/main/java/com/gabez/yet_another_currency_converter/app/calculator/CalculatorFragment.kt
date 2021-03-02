@@ -159,8 +159,8 @@ class CalculatorFragment : Fragment(), SelectCurrencyDialogCallback, KoinCompone
     }
 
     private fun setupInternetWarningObserver() {
-        viewModel.showInternetWarning.observe(viewLifecycleOwner, { showError ->
-            noInternetWarning.visibility = if (showError) View.VISIBLE else View.GONE
+        viewModel.hasInternet.observe(viewLifecycleOwner, { hasInternet ->
+            noInternetWarning.visibility = if (hasInternet) View.INVISIBLE else View.VISIBLE
         })
     }
 
