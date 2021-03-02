@@ -38,8 +38,8 @@ class NetworkClientImpl : NetworkClient {
         return if (firstCurrency.status == ResponseStatus.SUCCESS && secondCurrency.status == ResponseStatus.SUCCESS) {
             val result = CalculationsHelper.getResult(
                 request.amount,
-                (firstCurrency.data as CurrencyFromAPI).rates[0].mid,
-                (secondCurrency.data as CurrencyFromAPI).rates[0].mid
+                firstCurrency.data!!.rates[0].mid,
+                secondCurrency.data!!.rates[0].mid
             )
 
             CalculateResponse(
@@ -105,21 +105,21 @@ class NetworkClientImpl : NetworkClient {
             currencyFromA.isSuccessful && !currencyFromA.errorBody().toString()
                 .contains("404") -> GetCurrencyResponse(
                 ResponseStatus.SUCCESS,
-                currencyFromA.body()!!
+                data = currencyFromA.body()!!
             )
             currencyFromB.isSuccessful && !currencyFromB.errorBody().toString()
                 .contains("404") -> GetCurrencyResponse(
                 ResponseStatus.SUCCESS,
-                currencyFromB.body()!!
+                data = currencyFromB.body()!!
             )
             currencyFromA.code().toString().contains("404") && currencyFromB.code().toString()
                 .contains("404") -> GetCurrencyResponse(
                 ResponseStatus.FAILED,
-                currencyFromA.raw().code().toString() + " " + currencyFromA.message()
+                error = currencyFromA.raw().code().toString() + " " + currencyFromA.message()
             )
             else -> GetCurrencyResponse(
                 ResponseStatus.FAILED,
-                currencyFromA.raw().code().toString() + " " + currencyFromA.message()
+                error = currencyFromA.raw().code().toString() + " " + currencyFromA.message()
             )
         }
     }
