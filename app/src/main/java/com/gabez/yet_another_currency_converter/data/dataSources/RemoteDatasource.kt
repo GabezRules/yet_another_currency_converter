@@ -5,6 +5,5 @@ import com.gabez.yet_another_currency_converter.data.apiService.responses.Calcul
 import com.gabez.yet_another_currency_converter.data.apiService.responses.GetAllCurrenciesResponse
 
 interface RemoteDatasource {
-    suspend fun calculate(request: CalculateRequest): CalculateResponse
     suspend fun getCurrencies(): GetAllCurrenciesResponse
 }

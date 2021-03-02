@@ -95,7 +95,7 @@ class SelectCurrencyDialogFragment(
                     ResponseStatus.SUCCESS -> {
                         currencyList.postValue(response.data as List<CurrencyForView>)
                         Log.v("CURRENCIES", response.data.toString())
-                        (response.data as List<CurrencyForView>).map { item -> Log.v("CURRENCIES", item.nameShort) }
+                        (response.data as List<CurrencyForView>).map { item -> Log.v("CURRENCIES", item.code) }
                     }
                     ResponseStatus.FAILED -> nothingFoundText.text = response.data.toString()
                 }
@@ -128,8 +128,8 @@ class SelectCurrencyDialogFragment(
     private fun setupSearch() {
         searchBar.doOnTextChanged { text, _, _, _ ->
             val newList: List<CurrencyForView> = currencyList.value!!.filter { currencyItem ->
-                (getUniversalText(currencyItem.nameShort).contains(getUniversalText(text))
-                        || getUniversalText(currencyItem.nameLong).contains(getUniversalText(text)))
+                (getUniversalText(currencyItem.code).contains(getUniversalText(text))
+                        || getUniversalText(currencyItem.currencyName).contains(getUniversalText(text)))
             }
 
             currencyList.value = newList
@@ -149,9 +149,32 @@ class SelectCurrencyDialogFragment(
         closeButton.setOnClickListener { this@SelectCurrencyDialogFragment.dismiss() }
     }
 
-    override fun markCurrency(currency: CurrencyForView) = viewModel.markCurrency(currency)
+    override fun markCurrency(currency: CurrencyForView){
+        GlobalScope.launch {
+            viewModel.markCurrency(currency)
+        }.invokeOnCompletion {
+            currencyList.value!!.map { item ->
+                requireActivity().runOnUiThread {
+                    if(item.currencyName == currency.currencyName) item.isFavourite = true
+                    adapter.notifyDataSetChanged()
+                }
 
-    override fun unmarkCurrency(currency: CurrencyForView) = viewModel.unmarkCurrency(currency)
+            }
+        }
+    }
+
+    override fun unmarkCurrency(currency: CurrencyForView){
+        GlobalScope.launch {
+            viewModel.unmarkCurrency(currency)
+        }.invokeOnCompletion {
+            currencyList.value!!.map { item ->
+                requireActivity().runOnUiThread {
+                    if(item.currencyName == currency.currencyName) item.isFavourite = false
+                    adapter.notifyDataSetChanged()
+                }
+            }
+        }
+    }
 
     override fun setCurrency(currency: CurrencyForView) {
         callback.setCurrency(currency, spinnerIndex)

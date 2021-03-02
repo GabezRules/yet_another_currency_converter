@@ -4,11 +4,8 @@ import com.gabez.yet_another_currency_converter.data.apiService.BASE_URL
 import com.gabez.yet_another_currency_converter.data.apiService.entities.CurrencyFromAPI
 import com.gabez.yet_another_currency_converter.domain.calculations.CalculationsHelper
 import com.gabez.yet_another_currency_converter.domain.request.CalculateRequest
-import com.gabez.yet_another_currency_converter.data.apiService.responses.CalculateResponse
-import com.gabez.yet_another_currency_converter.data.apiService.responses.GetCurrencyResponse
-import com.gabez.yet_another_currency_converter.data.apiService.responses.GetAllCurrenciesResponse
-import com.gabez.yet_another_currency_converter.data.apiService.responses.ResponseStatus
 import com.gabez.yet_another_currency_converter.data.apiService.entities.RateInCurrencyFromAPI
+import com.gabez.yet_another_currency_converter.data.apiService.responses.*
 import com.gabez.yet_another_currency_converter.entities.CurrencyForView
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import retrofit2.Retrofit
@@ -48,6 +45,7 @@ class NetworkClientImpl : NetworkClient {
                 amount = result,
                 error = null
             )
+
         } else CalculateResponse(
             flag = ResponseStatus.FAILED,
             amount = null,
@@ -56,7 +54,7 @@ class NetworkClientImpl : NetworkClient {
 
     }
 
-    override suspend fun getAllCurrencies(): GetAllCurrenciesResponse {
+    override suspend fun getAllCurrenciesMinimal(): GetAllCurrenciesResponse {
         val currenciesFromA = service.getAllFromTable("a").awaitResponse()
         val currenciesFromB = service.getAllFromTable("b").awaitResponse()
         val allCurrencies = arrayListOf<CurrencyFromAPI>()
@@ -127,8 +125,9 @@ class NetworkClientImpl : NetworkClient {
 
     fun CurrencyFromAPI.toCurrencyForView(): CurrencyForView {
         return CurrencyForView(
-            nameShort = this.currency,
-            nameLong = this.code
+            code = this.currency,
+            currencyName = this.code,
+            mid = this.rates[0].mid
         )
     }
 }

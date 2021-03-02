@@ -20,7 +20,7 @@ import kotlinx.coroutines.flow.channelFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 
-class CalculatorViewModel(private val usecase: CalculateUsecase, private val context: Context): ViewModel() {
+class CalculatorViewModel(private val context: Context, private val connectionMonitor: InternetConnectionMonitor): ViewModel() {
     private var valueToCalculate: Float? = 0f
 
     private val _firstCurrency: MutableLiveData<CurrencyForView> = MutableLiveData()
@@ -34,7 +34,9 @@ class CalculatorViewModel(private val usecase: CalculateUsecase, private val con
     private val _isLoading: MutableLiveData<Boolean> = MutableLiveData(false)
     val isLoading: LiveData<Boolean> = _isLoading
 
-    val hasInternet: LiveData<Boolean> by lazy{ InternetConnectionMonitor(context) }
+    val hasInternet: LiveData<Boolean> = connectionMonitor
+
+    private val usecase: CalculateUsecase = CalculateUsecase()
 
     fun setValueToCalculate(value: Float?){
         valueToCalculate = value
@@ -51,23 +53,12 @@ class CalculatorViewModel(private val usecase: CalculateUsecase, private val con
         usecase.setSecondCurrency(value)
     }
 
-    @ExperimentalCoroutinesApi
-    fun calculate(): Flow<CalculateResponse> = channelFlow {
+    fun calculate(): CalculateResponse {
         val calculateRequest = createCalculateRequest()
         val response = CalculateRequestValidator.isValid(calculateRequest)
-        if(response.isValid){
-            _isLoading.postValue(true)
-            viewModelScope.launch{
-                val res = usecase.invoke()
-                sendBlocking(res)
-                close()
-            }.invokeOnCompletion { _isLoading.postValue(false) }
-        }else {
-            sendBlocking(CalculateResponse(ResponseStatus.NOT_VALID, null, response))
-            close()
-        }
 
-        awaitClose()
+        return if(response.isValid) usecase.invoke()
+        else CalculateResponse(ResponseStatus.NOT_VALID, null, response)
     }
 
     fun swapCurrencies(){
