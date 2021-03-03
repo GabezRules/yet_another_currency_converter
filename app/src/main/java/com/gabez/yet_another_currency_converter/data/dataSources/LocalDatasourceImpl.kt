@@ -1,26 +1,16 @@
 package com.gabez.yet_another_currency_converter.data.dataSources
 
-import com.gabez.yet_another_currency_converter.domain.request.CalculateRequest
-import com.gabez.yet_another_currency_converter.data.apiService.responses.CalculateResponse
-import com.gabez.yet_another_currency_converter.data.apiService.responses.GetAllCurrenciesResponse
-import com.gabez.yet_another_currency_converter.data.apiService.responses.ResponseStatus
+import com.gabez.data_access.common.GetCurrenciesResponse
+import com.gabez.data_access.localDbFacade.LocalDbFacade
+import com.gabez.yet_another_currency_converter.entities.CurrencyForView
 
-class LocalDatasourceImpl: LocalDatasource {
-    override suspend fun calculate(request: CalculateRequest): CalculateResponse {
+class LocalDatasourceImpl(private val facade: LocalDbFacade): LocalDatasource {
 
-        //TODO: Implement
-        return CalculateResponse(
-            flag = ResponseStatus.NOT_VALID,
-            amount = 0f,
-            error = null
-        )
+    override suspend fun getCurrencies(): GetCurrenciesResponse {
+        return facade.getCurrencies()
     }
 
-    override suspend fun getCurrencies(): GetAllCurrenciesResponse {
-
-        //TODO: Implement
-        return GetAllCurrenciesResponse(
-            flag = ResponseStatus.NOT_VALID
-        )
+    override suspend fun markCurrency(isFavourite: Boolean, currency: CurrencyForView) {
+        facade.markCurrency(currency.currencyName, isFavourite)
     }
 }

@@ -12,12 +12,13 @@ import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.MutableLiveData
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.gabez.data_access.entities.CurrencyUniversal
+import com.gabez.data_access.common.ResponseStatus
 import com.gabez.yet_another_currency_converter.R
 import com.gabez.yet_another_currency_converter.app.selectFromAllCurrencies.currencyList.AllCurrenciesListAdapter
 import com.gabez.yet_another_currency_converter.app.selectFromAllCurrencies.currencyList.CurrencyListCallback
 import com.gabez.yet_another_currency_converter.entities.CurrencyForView
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
-import com.gabez.yet_another_currency_converter.data.apiService.responses.ResponseStatus
 import com.google.android.material.textfield.TextInputEditText
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.GlobalScope
@@ -93,9 +94,13 @@ class SelectCurrencyDialogFragment(
             viewModel.getCurrencies().collect { response ->
                 when(response.flag){
                     ResponseStatus.SUCCESS -> {
-                        currencyList.postValue(response.data as List<CurrencyForView>)
-                        Log.v("CURRENCIES", response.data.toString())
-                        (response.data as List<CurrencyForView>).map { item -> Log.v("CURRENCIES", item.nameShort) }
+                        currencyList.postValue((response.data as List<CurrencyUniversal>).map{
+                            CurrencyForView(
+                                code = it.code,
+                                currencyName = it.currencyName,
+                                mid = it.mid
+                            )
+                        })
                     }
                     ResponseStatus.FAILED -> nothingFoundText.text = response.data.toString()
                 }
@@ -128,8 +133,8 @@ class SelectCurrencyDialogFragment(
     private fun setupSearch() {
         searchBar.doOnTextChanged { text, _, _, _ ->
             val newList: List<CurrencyForView> = currencyList.value!!.filter { currencyItem ->
-                (getUniversalText(currencyItem.nameShort).contains(getUniversalText(text))
-                        || getUniversalText(currencyItem.nameLong).contains(getUniversalText(text)))
+                (getUniversalText(currencyItem.code).contains(getUniversalText(text))
+                        || getUniversalText(currencyItem.currencyName).contains(getUniversalText(text)))
             }
 
             currencyList.value = newList
@@ -149,9 +154,32 @@ class SelectCurrencyDialogFragment(
         closeButton.setOnClickListener { this@SelectCurrencyDialogFragment.dismiss() }
     }
 
-    override fun markCurrency(currency: CurrencyForView) = viewModel.markCurrency(currency)
+    override fun markCurrency(currency: CurrencyForView){
+        GlobalScope.launch {
+            viewModel.markCurrency(currency)
+        }.invokeOnCompletion {
+            currencyList.value!!.map { item ->
+                requireActivity().runOnUiThread {
+                    if(item.currencyName == currency.currencyName) item.isFavourite = true
+                    adapter.notifyDataSetChanged()
+                }
 
-    override fun unmarkCurrency(currency: CurrencyForView) = viewModel.unmarkCurrency(currency)
+            }
+        }
+    }
+
+    override fun unmarkCurrency(currency: CurrencyForView){
+        GlobalScope.launch {
+            viewModel.unmarkCurrency(currency)
+        }.invokeOnCompletion {
+            currencyList.value!!.map { item ->
+                requireActivity().runOnUiThread {
+                    if(item.currencyName == currency.currencyName) item.isFavourite = false
+                    adapter.notifyDataSetChanged()
+                }
+            }
+        }
+    }
 
     override fun setCurrency(currency: CurrencyForView) {
         callback.setCurrency(currency, spinnerIndex)

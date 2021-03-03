@@ -1,24 +1,18 @@
 package com.gabez.yet_another_currency_converter.app.calculator
 
+import android.content.Context
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.gabez.yet_another_currency_converter.app.calculator.calculateRequest.ValidateRequest
 import com.gabez.yet_another_currency_converter.app.calculator.calculateRequest.CalculateRequestValidator
-import com.gabez.yet_another_currency_converter.data.apiService.responses.CalculateResponse
-import com.gabez.yet_another_currency_converter.data.apiService.responses.ResponseStatus
+import com.gabez.yet_another_currency_converter.domain.calculations.CalculateResponse
+import com.gabez.nbp_api.apiService.responses.ApiResponseStatus
 import com.gabez.yet_another_currency_converter.domain.usecases.CalculateUsecase
 import com.gabez.yet_another_currency_converter.entities.CurrencyForView
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.channels.awaitClose
-import kotlinx.coroutines.channels.sendBlocking
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.channelFlow
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.launch
+import com.gabez.yet_another_currency_converter.internetConnection.InternetConnectionMonitor
 
-class CalculatorViewModel(private val usecase: CalculateUsecase): ViewModel() {
+class CalculatorViewModel(private val context: Context, private val connectionMonitor: InternetConnectionMonitor): ViewModel() {
     private var valueToCalculate: Float? = 0f
 
     private val _firstCurrency: MutableLiveData<CurrencyForView> = MutableLiveData()
@@ -32,8 +26,9 @@ class CalculatorViewModel(private val usecase: CalculateUsecase): ViewModel() {
     private val _isLoading: MutableLiveData<Boolean> = MutableLiveData(false)
     val isLoading: LiveData<Boolean> = _isLoading
 
-    private val _showInternetWarning: MutableLiveData<Boolean> = MutableLiveData(false)
-    val showInternetWarning: LiveData<Boolean> = _showInternetWarning
+    val hasInternet: LiveData<Boolean> = connectionMonitor
+
+    private val usecase: CalculateUsecase = CalculateUsecase()
 
     fun setValueToCalculate(value: Float?){
         valueToCalculate = value
@@ -50,23 +45,12 @@ class CalculatorViewModel(private val usecase: CalculateUsecase): ViewModel() {
         usecase.setSecondCurrency(value)
     }
 
-    @ExperimentalCoroutinesApi
-    fun calculate(): Flow<CalculateResponse> = channelFlow {
+    fun calculate(): CalculateResponse {
         val calculateRequest = createCalculateRequest()
         val response = CalculateRequestValidator.isValid(calculateRequest)
-        if(response.isValid){
-            _isLoading.postValue(true)
-            viewModelScope.launch{
-                val res = usecase.invoke()
-                sendBlocking(res)
-                close()
-            }.invokeOnCompletion { _isLoading.postValue(false) }
-        }else {
-            sendBlocking(CalculateResponse(ResponseStatus.NOT_VALID, null, response))
-            close()
-        }
 
-        awaitClose()
+        return if(response.isValid) usecase.invoke()
+        else CalculateResponse(ApiResponseStatus.NOT_VALID, null, response)
     }
 
     fun swapCurrencies(){
