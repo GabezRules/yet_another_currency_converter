@@ -29,13 +29,12 @@ class GetDataService : Service(), KoinComponent {
     private val CHANNEL_ID = "com.gabez.yet_another_currency_converter.service.CHANNEL_ID"
 
     private val localDatabase: CurrencyDatabase by inject()
-    private val networkService: NetworkClient by inject()
     private val hasInternet: InternetConnectionMonitor by inject()
 
     private val apiFacade: ApiFacade by inject()
     private val localDbFacade: LocalDbFacade by inject()
 
-    private lateinit var repeatFunJob: Job
+    private var repeatFunJob: Job? = null
 
     companion object {
         fun startService(context: Context) {
@@ -53,7 +52,7 @@ class GetDataService : Service(), KoinComponent {
 
         GlobalScope.launch(Dispatchers.IO) {
             repeatFunJob = repeatFun()
-            repeatFunJob.start()
+            repeatFunJob!!.start()
         }
 
         createNotificationChannel()
@@ -81,7 +80,7 @@ class GetDataService : Service(), KoinComponent {
 
     override fun onDestroy() {
         super.onDestroy()
-        GlobalScope.launch { repeatFunJob.cancel() }
+        GlobalScope.launch { repeatFunJob?.cancel() }
     }
 
     private fun createNotificationChannel() {

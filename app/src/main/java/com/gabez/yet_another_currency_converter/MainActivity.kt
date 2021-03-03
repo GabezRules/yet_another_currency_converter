@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import com.gabez.yet_another_currency_converter.calculator.app.calculator.CalculatorFragment
+import com.gabez.yet_another_currency_converter.chart.ChartFragment
 import com.gabez.yet_another_currency_converter.service.GetDataService
 import org.koin.core.KoinComponent
 
@@ -12,7 +13,7 @@ class MainActivity : AppCompatActivity(), KoinComponent {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         GetDataService.startService(this@MainActivity)
-        setCurrentFragment(CalculatorFragment.getInstance())
+        setCurrentFragment(ChartFragment.getInstance())
 
     }
 
