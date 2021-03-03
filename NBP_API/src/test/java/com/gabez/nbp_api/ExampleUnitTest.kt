@@ -1,4 +1,4 @@
-package com.gabez.yet_another_currency_converter
+package com.gabez.nbp_api
 
 import org.junit.Test
 
