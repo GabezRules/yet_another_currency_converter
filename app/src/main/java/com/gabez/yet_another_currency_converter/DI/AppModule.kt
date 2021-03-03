@@ -4,19 +4,22 @@ import com.gabez.data_access.apiFacade.ApiFacade
 import com.gabez.data_access.apiFacade.ApiFacadeImpl
 import com.gabez.data_access.localDbFacade.LocalDbFacade
 import com.gabez.data_access.localDbFacade.LocalDbFacadeImpl
-import com.gabez.yet_another_currency_converter.app.calculator.CalculatorViewModel
-import com.gabez.yet_another_currency_converter.app.selectFromAllCurrencies.SelectCurrencyViewModel
-import com.gabez.yet_another_currency_converter.data.CalculatorRepositoryImpl
+import com.gabez.yet_another_currency_converter.calculator.app.calculator.CalculatorViewModel
+import com.gabez.yet_another_currency_converter.calculator.app.selectFromAllCurrencies.SelectCurrencyViewModel
+import com.gabez.yet_another_currency_converter.calculator.data.CalculatorRepositoryImpl
 import com.gabez.nbp_api.apiService.network.NetworkClient
 import com.gabez.nbp_api.apiService.network.NetworkClientImpl
-import com.gabez.yet_another_currency_converter.data.dataSources.LocalDatasource
-import com.gabez.yet_another_currency_converter.data.dataSources.LocalDatasourceImpl
+import com.gabez.yet_another_currency_converter.calculator.data.dataSources.LocalDatasource
+import com.gabez.yet_another_currency_converter.calculator.data.dataSources.LocalDatasourceImpl
 import com.gabez.local_database.CurrencyDatabase
-import com.gabez.yet_another_currency_converter.data.dataSources.RemoteDatasource
-import com.gabez.yet_another_currency_converter.data.dataSources.RemoteDatasourceImpl
-import com.gabez.yet_another_currency_converter.domain.CalculatorRepository
-import com.gabez.yet_another_currency_converter.domain.usecases.GetAllCurrenciesUsecase
-import com.gabez.yet_another_currency_converter.domain.usecases.MarkCurrencyUsecase
+import com.gabez.yet_another_currency_converter.calculator.data.dataSources.RemoteDatasource
+import com.gabez.yet_another_currency_converter.calculator.data.dataSources.RemoteDatasourceImpl
+import com.gabez.yet_another_currency_converter.calculator.domain.CalculatorRepository
+import com.gabez.yet_another_currency_converter.calculator.domain.usecases.GetAllCurrenciesUsecase
+import com.gabez.yet_another_currency_converter.calculator.domain.usecases.MarkCurrencyUsecase
+import com.gabez.yet_another_currency_converter.chart.app.ChartViewModel
+import com.gabez.yet_another_currency_converter.chart.domain.GetChartDataUsecase
+import com.gabez.yet_another_currency_converter.chart.domain.GetFavouriteCurrenciesUsecase
 import com.gabez.yet_another_currency_converter.internetConnection.InternetConnectionMonitor
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
@@ -24,9 +27,13 @@ import org.koin.dsl.module
 val appModule = module {
     viewModel { CalculatorViewModel(get(), get()) }
     viewModel { SelectCurrencyViewModel(get(), get()) }
+    viewModel { ChartViewModel(get(), get()) }
 
     single { GetAllCurrenciesUsecase(get(), get()) }
     single { MarkCurrencyUsecase(get()) }
+    single { GetFavouriteCurrenciesUsecase() }
+    single { GetChartDataUsecase() }
+
     single { CalculatorRepositoryImpl(get(), get()) as CalculatorRepository }
 
     single { LocalDatasourceImpl(get()) as LocalDatasource }

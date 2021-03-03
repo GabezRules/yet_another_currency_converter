@@ -1,6 +1,6 @@
 package com.gabez.yet_another_currency_converter
 
-import com.gabez.yet_another_currency_converter.domain.calculations.CalculationsHelper
+import com.gabez.yet_another_currency_converter.calculator.domain.calculations.CalculationsHelper
 import org.junit.Assert.assertEquals
 import org.junit.Test
 import kotlin.math.pow

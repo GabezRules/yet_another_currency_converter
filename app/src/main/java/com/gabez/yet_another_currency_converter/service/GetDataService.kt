@@ -16,12 +16,10 @@ import com.gabez.data_access.common.ResponseStatus
 import com.gabez.data_access.entities.CurrencyUniversal
 import com.gabez.data_access.localDbFacade.LocalDbFacade
 import com.gabez.yet_another_currency_converter.R
-import com.gabez.yet_another_currency_converter.app.MainActivity
+import com.gabez.yet_another_currency_converter.MainActivity
 import com.gabez.nbp_api.apiService.network.NetworkClient
-import com.gabez.nbp_api.apiService.responses.ApiResponseStatus
 import com.gabez.local_database.CurrencyDatabase
 import com.gabez.local_database.CurrencyEntity
-import com.gabez.yet_another_currency_converter.entities.CurrencyForView
 import com.gabez.yet_another_currency_converter.internetConnection.InternetConnectionMonitor
 import kotlinx.coroutines.*
 import org.koin.core.KoinComponent
@@ -31,13 +29,12 @@ class GetDataService : Service(), KoinComponent {
     private val CHANNEL_ID = "com.gabez.yet_another_currency_converter.service.CHANNEL_ID"
 
     private val localDatabase: CurrencyDatabase by inject()
-    private val networkService: NetworkClient by inject()
     private val hasInternet: InternetConnectionMonitor by inject()
 
     private val apiFacade: ApiFacade by inject()
     private val localDbFacade: LocalDbFacade by inject()
 
-    private lateinit var repeatFunJob: Job
+    private var repeatFunJob: Job? = null
 
     companion object {
         fun startService(context: Context) {
@@ -55,7 +52,7 @@ class GetDataService : Service(), KoinComponent {
 
         GlobalScope.launch(Dispatchers.IO) {
             repeatFunJob = repeatFun()
-            repeatFunJob.start()
+            repeatFunJob!!.start()
         }
 
         createNotificationChannel()
@@ -83,7 +80,7 @@ class GetDataService : Service(), KoinComponent {
 
     override fun onDestroy() {
         super.onDestroy()
-        GlobalScope.launch { repeatFunJob.cancel() }
+        GlobalScope.launch { repeatFunJob?.cancel() }
     }
 
     private fun createNotificationChannel() {
