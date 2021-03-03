@@ -28,7 +28,7 @@ import kotlinx.coroutines.launch
 import org.koin.core.KoinComponent
 import org.koin.core.inject
 
-
+//TODO: Fix adding to favourites
 class SelectCurrencyDialogFragment(
     private val callback: SelectCurrencyDialogCallback,
     private val spinnerIndex: CurrencySpinnerIndex

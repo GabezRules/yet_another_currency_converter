@@ -3,6 +3,7 @@ package com.gabez.yet_another_currency_converter.domain.calculations
 import kotlin.math.pow
 import kotlin.math.roundToInt
 
+//TODO: Check if functionality returns proper values
 class CalculationsHelper {
     companion object{
         fun getResult(amount: Float, midFirst: Float, midSecond: Float): Float{
