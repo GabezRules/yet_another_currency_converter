@@ -16,6 +16,8 @@ import com.gabez.yet_another_currency_converter.app.selectFromAllCurrencies.Curr
 import com.gabez.yet_another_currency_converter.app.selectFromAllCurrencies.SelectCurrencyDialogCallback
 import com.gabez.yet_another_currency_converter.app.selectFromAllCurrencies.SelectCurrencyDialogFragment
 import com.gabez.nbp_api.apiService.responses.ApiResponseStatus
+import com.gabez.yet_another_currency_converter.domain.calculations.CalculateResponse
+import com.gabez.yet_another_currency_converter.domain.calculations.CalculateResponseStatus
 import com.gabez.yet_another_currency_converter.entities.CurrencyForView
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.textfield.TextInputEditText
@@ -109,19 +111,12 @@ class CalculatorFragment : Fragment(), SelectCurrencyDialogCallback, KoinCompone
             val response = viewModel.calculate()
 
             when (response.flag) {
-                ApiResponseStatus.NOT_VALID -> requireActivity().runOnUiThread {
+                CalculateResponseStatus.NOT_VALID -> requireActivity().runOnUiThread {
                     setErrorsOnNonValidData(response.error as CalculateRequestValidatorResponse)
                     Toast.makeText(requireContext(), "data is not valid", Toast.LENGTH_LONG)
                         .show()
                 }
-                ApiResponseStatus.FAILED -> requireActivity().runOnUiThread {
-                    Toast.makeText(
-                        requireContext(),
-                        response.error.toString(),
-                        Toast.LENGTH_LONG
-                    ).show()
-                }
-                ApiResponseStatus.SUCCESS -> requireActivity().runOnUiThread {
+                CalculateResponseStatus.VALID -> requireActivity().runOnUiThread {
                     resetErrors()
                     setResult(response.amount!!)
                 }

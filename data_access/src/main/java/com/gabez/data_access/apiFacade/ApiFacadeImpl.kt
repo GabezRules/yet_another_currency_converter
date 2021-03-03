@@ -13,12 +13,9 @@ class ApiFacadeImpl(private val networkClient: NetworkClient): ApiFacade {
         return networkClient.getAllCurrenciesMinimal().toUniversalResponse()
     }
 
-
-    //TODO: Remove not_valid status
     private fun ApiAllCurrenciesResponse.toUniversalResponse(): GetCurrenciesResponse {
         return GetCurrenciesResponse(
             flag = when(this.flag){
-                ApiResponseStatus.NOT_VALID -> ResponseStatus.FAILED
                 ApiResponseStatus.FAILED -> ResponseStatus.FAILED
                 ApiResponseStatus.SUCCESS -> ResponseStatus.SUCCESS
             },

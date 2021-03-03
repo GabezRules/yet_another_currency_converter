@@ -3,6 +3,7 @@ package com.gabez.yet_another_currency_converter.domain.usecases
 import android.util.Log
 import com.gabez.yet_another_currency_converter.domain.calculations.CalculateResponse
 import com.gabez.nbp_api.apiService.responses.ApiResponseStatus
+import com.gabez.yet_another_currency_converter.domain.calculations.CalculateResponseStatus
 import com.gabez.yet_another_currency_converter.domain.calculations.CalculationsHelper
 import com.gabez.yet_another_currency_converter.entities.CurrencyForView
 
@@ -26,8 +27,6 @@ class CalculateUsecase {
         Log.v("CALCULATE", "Amount: "+value?.toString())
     }
 
-
-    //TODO: Refactor to not be dependent on repo
     fun invoke(): CalculateResponse {
 
         val result = CalculationsHelper.getResult(
@@ -37,7 +36,7 @@ class CalculateUsecase {
         )
 
         return CalculateResponse(
-            flag = ApiResponseStatus.SUCCESS,
+            flag = CalculateResponseStatus.VALID,
             amount = result,
             error = null
         )

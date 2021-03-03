@@ -8,6 +8,7 @@ import com.gabez.yet_another_currency_converter.app.calculator.calculateRequest.
 import com.gabez.yet_another_currency_converter.app.calculator.calculateRequest.CalculateRequestValidator
 import com.gabez.yet_another_currency_converter.domain.calculations.CalculateResponse
 import com.gabez.nbp_api.apiService.responses.ApiResponseStatus
+import com.gabez.yet_another_currency_converter.domain.calculations.CalculateResponseStatus
 import com.gabez.yet_another_currency_converter.domain.usecases.CalculateUsecase
 import com.gabez.yet_another_currency_converter.entities.CurrencyForView
 import com.gabez.yet_another_currency_converter.internetConnection.InternetConnectionMonitor
@@ -50,7 +51,7 @@ class CalculatorViewModel(private val context: Context, private val connectionMo
         val response = CalculateRequestValidator.isValid(calculateRequest)
 
         return if(response.isValid) usecase.invoke()
-        else CalculateResponse(ApiResponseStatus.NOT_VALID, null, response)
+        else CalculateResponse(CalculateResponseStatus.NOT_VALID, null, response)
     }
 
     fun swapCurrencies(){
