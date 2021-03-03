@@ -11,7 +11,7 @@ import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import com.gabez.yet_another_currency_converter.R
-import com.gabez.yet_another_currency_converter.calculator.app.calculator.calculateRequest.CalculateRequestValidatorResponse
+import com.gabez.yet_another_currency_converter.calculator.app.calculator.calculateValidator.CalculateRequestValidatorResponse
 import com.gabez.yet_another_currency_converter.calculator.app.selectFromAllCurrencies.CurrencySpinnerIndex
 import com.gabez.yet_another_currency_converter.calculator.app.selectFromAllCurrencies.SelectCurrencyDialogCallback
 import com.gabez.yet_another_currency_converter.calculator.app.selectFromAllCurrencies.SelectCurrencyDialogFragment

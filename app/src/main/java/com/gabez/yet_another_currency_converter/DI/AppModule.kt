@@ -17,6 +17,9 @@ import com.gabez.yet_another_currency_converter.calculator.data.dataSources.Remo
 import com.gabez.yet_another_currency_converter.calculator.domain.CalculatorRepository
 import com.gabez.yet_another_currency_converter.calculator.domain.usecases.GetAllCurrenciesUsecase
 import com.gabez.yet_another_currency_converter.calculator.domain.usecases.MarkCurrencyUsecase
+import com.gabez.yet_another_currency_converter.chart.app.ChartViewModel
+import com.gabez.yet_another_currency_converter.chart.domain.GetChartDataUsecase
+import com.gabez.yet_another_currency_converter.chart.domain.GetFavouriteCurrenciesUsecase
 import com.gabez.yet_another_currency_converter.internetConnection.InternetConnectionMonitor
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
@@ -24,9 +27,13 @@ import org.koin.dsl.module
 val appModule = module {
     viewModel { CalculatorViewModel(get(), get()) }
     viewModel { SelectCurrencyViewModel(get(), get()) }
+    viewModel { ChartViewModel(get(), get()) }
 
     single { GetAllCurrenciesUsecase(get(), get()) }
     single { MarkCurrencyUsecase(get()) }
+    single { GetFavouriteCurrenciesUsecase() }
+    single { GetChartDataUsecase() }
+
     single { CalculatorRepositoryImpl(get(), get()) as CalculatorRepository }
 
     single { LocalDatasourceImpl(get()) as LocalDatasource }

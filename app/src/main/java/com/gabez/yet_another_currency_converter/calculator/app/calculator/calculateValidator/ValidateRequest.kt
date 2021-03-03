@@ -1,4 +1,4 @@
-package com.gabez.yet_another_currency_converter.calculator.app.calculator.calculateRequest
+package com.gabez.yet_another_currency_converter.calculator.app.calculator.calculateValidator
 
 import com.gabez.yet_another_currency_converter.calculator.entities.CurrencyForView
 

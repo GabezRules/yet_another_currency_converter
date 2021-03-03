@@ -1,4 +1,4 @@
-package com.gabez.yet_another_currency_converter.chart.chartGenerator
+package com.gabez.yet_another_currency_converter.chart.app.chartGenerator
 
 import android.content.Context
 import android.widget.TextView
@@ -14,9 +14,9 @@ class CustomMarker(context: Context, layoutResource: Int):  MarkerView(context, 
         var resText = ""
 
         resText = if(value.toString().length > 8){
-            "Val: " + value.toString().substring(0,7)
+            "Mid: " + value.toString().substring(0,7)
         } else{
-            "Val: $value"
+            "Mid: $value"
         }
 
         this.findViewById<TextView>(R.id.tvPrice).text = resText

@@ -1,4 +1,4 @@
-package com.gabez.yet_another_currency_converter.chart.topListView
+package com.gabez.yet_another_currency_converter.chart.app.topListView
 
 import android.content.Context
 import android.content.res.ColorStateList

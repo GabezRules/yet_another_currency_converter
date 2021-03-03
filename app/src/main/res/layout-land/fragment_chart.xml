@@ -61,7 +61,7 @@
             android:id="@+id/dateFromBody"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="dd/mm/yyy"
+            android:hint="yyyy-mm-dd"
             android:inputType="date" />
 
     </com.google.android.material.textfield.TextInputLayout>
@@ -92,22 +92,23 @@
             android:id="@+id/dateToBody"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="dd/mm/yyy"
+            android:hint="yyyy-mm-dd"
             android:inputType="date" />
 
     </com.google.android.material.textfield.TextInputLayout>
 
     <TextView
+        android:id="@+id/chosenCurrencyText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:fontFamily="@font/montserrat_medium"
         android:text="Chosen currency: PLN"
-        app:layout_constraintBottom_toTopOf="@id/generateBtn"
+        app:layout_constraintBottom_toTopOf="@id/generateChartButton"
         app:layout_constraintLeft_toLeftOf="@+id/dateFromContainer"
         app:layout_constraintRight_toRightOf="@+id/dateFromContainer" />
 
     <com.google.android.material.button.MaterialButton
-        android:id="@+id/generateBtn"
+        android:id="@+id/generateChartButton"
         android:layout_width="150dp"
         android:layout_height="48dp"
         android:text="GENERATE"
