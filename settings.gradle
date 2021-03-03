@@ -1,2 +1,5 @@
+include ':data_access'
+include ':local_database'
+include ':NBP_API'
 include ':app'
 rootProject.name = "Yet another currency converter"

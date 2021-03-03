@@ -11,12 +11,16 @@ import android.os.IBinder
 import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
+import com.gabez.data_access.apiFacade.ApiFacade
+import com.gabez.data_access.common.ResponseStatus
+import com.gabez.data_access.entities.CurrencyUniversal
+import com.gabez.data_access.localDbFacade.LocalDbFacade
 import com.gabez.yet_another_currency_converter.R
 import com.gabez.yet_another_currency_converter.app.MainActivity
-import com.gabez.yet_another_currency_converter.data.apiService.network.NetworkClient
-import com.gabez.yet_another_currency_converter.data.apiService.responses.ResponseStatus
-import com.gabez.yet_another_currency_converter.data.localDb.CurrencyDatabase
-import com.gabez.yet_another_currency_converter.data.localDb.entities.CurrencyEntity
+import com.gabez.nbp_api.apiService.network.NetworkClient
+import com.gabez.nbp_api.apiService.responses.ApiResponseStatus
+import com.gabez.local_database.CurrencyDatabase
+import com.gabez.local_database.CurrencyEntity
 import com.gabez.yet_another_currency_converter.entities.CurrencyForView
 import com.gabez.yet_another_currency_converter.internetConnection.InternetConnectionMonitor
 import kotlinx.coroutines.*
@@ -29,6 +33,9 @@ class GetDataService : Service(), KoinComponent {
     private val localDatabase: CurrencyDatabase by inject()
     private val networkService: NetworkClient by inject()
     private val hasInternet: InternetConnectionMonitor by inject()
+
+    private val apiFacade: ApiFacade by inject()
+    private val localDbFacade: LocalDbFacade by inject()
 
     private lateinit var repeatFunJob: Job
 
@@ -92,45 +99,43 @@ class GetDataService : Service(), KoinComponent {
 
     private suspend fun loadRemoteData() {
         Log.v("SERVICE", "SERVICE")
-        val getRemoteData = GlobalScope.async { networkService.getAllCurrenciesMinimal() }
-        val getFavCurrenciesLocal = GlobalScope.async { localDatabase.dao().getAllFavourites() }
+        val getRemoteData = GlobalScope.async { apiFacade.getCurrencies() }
+        val getFavCurrenciesLocal = GlobalScope.async { localDbFacade.getFavCurrencies() }
 
         val apiResponse = getRemoteData.await()
 
-        if(apiResponse.flag != ResponseStatus.FAILED) {
+        if (apiResponse.flag != ResponseStatus.FAILED) {
 
-            apiResponse.data!!.map{
-                currencyFromApi ->
-                getFavCurrenciesLocal.await().map{
-                    favCurrency ->
-                    if(favCurrency.currencyName == currencyFromApi.currencyName) currencyFromApi.isFavourite = true
+            val currencies = apiResponse.data!!
+
+            currencies.map { currency ->
+                getFavCurrenciesLocal.await().map { favCurrency ->
+                    if (favCurrency.currencyName == currency.currencyName) currency.isFavourite =
+                        true
                 }
 
             }
 
-
-            localDatabase.dao().updateData(
-                apiResponse.data.toEntityList()
-            )
+            localDatabase.dao().updateData(currencies.toEntityList())
         }
     }
 
     private suspend fun repeatFun(): Job {
         while (true) {
-            if(hasInternet.value ==  true){
+            if (hasInternet.value == true) {
                 loadRemoteData()
                 delay(1000 * 10)
             }
         }
     }
 
-    private fun List<CurrencyForView>.toEntityList(): List<CurrencyEntity>{
-        return this.map{
-            item ->
+    private fun List<CurrencyUniversal>.toEntityList(): List<CurrencyEntity> {
+        return this.map { item ->
             CurrencyEntity(
                 currencyName = item.currencyName,
                 code = item.code,
-                mid = item.mid
+                mid = item.mid,
+                isFavourite = item.isFavourite
             )
         }
     }

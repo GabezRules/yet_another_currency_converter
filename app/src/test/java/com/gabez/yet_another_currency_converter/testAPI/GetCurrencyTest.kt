@@ -1,7 +1,7 @@
 package com.gabez.yet_another_currency_converter.testAPI
 
-import com.gabez.yet_another_currency_converter.data.apiService.network.NetworkClientImpl
-import com.gabez.yet_another_currency_converter.data.apiService.entities.CurrencyFromAPI
+import com.gabez.nbp_api.apiService.network.NetworkClientImpl
+import com.gabez.data_access.CurrencyFromAPI
 import junit.framework.Assert.assertEquals
 import kotlinx.coroutines.*
 import org.junit.Test

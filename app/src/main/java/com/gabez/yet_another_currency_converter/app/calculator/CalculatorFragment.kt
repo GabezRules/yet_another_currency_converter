@@ -15,14 +15,13 @@ import com.gabez.yet_another_currency_converter.app.calculator.calculateRequest.
 import com.gabez.yet_another_currency_converter.app.selectFromAllCurrencies.CurrencySpinnerIndex
 import com.gabez.yet_another_currency_converter.app.selectFromAllCurrencies.SelectCurrencyDialogCallback
 import com.gabez.yet_another_currency_converter.app.selectFromAllCurrencies.SelectCurrencyDialogFragment
-import com.gabez.yet_another_currency_converter.data.apiService.responses.ResponseStatus
+import com.gabez.nbp_api.apiService.responses.ApiResponseStatus
+import com.gabez.yet_another_currency_converter.domain.calculations.CalculateResponse
+import com.gabez.yet_another_currency_converter.domain.calculations.CalculateResponseStatus
 import com.gabez.yet_another_currency_converter.entities.CurrencyForView
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.textfield.TextInputEditText
 import com.jaredrummler.materialspinner.MaterialSpinner
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.launch
 import org.koin.core.KoinComponent
 import org.koin.core.inject
 
@@ -90,12 +89,12 @@ class CalculatorFragment : Fragment(), SelectCurrencyDialogCallback, KoinCompone
         }
 
         viewModel.firstCurrency.observe(viewLifecycleOwner, Observer {
-            selectFirstCurrency.text = it.code
+            selectFirstCurrency.text = it.currencyName
             selectFirstCurrency.collapse()
         })
 
         viewModel.secondCurrency.observe(viewLifecycleOwner, Observer {
-            selectSecondCurrency.text = it.code
+            selectSecondCurrency.text = it.currencyName
             selectSecondCurrency.collapse()
         })
     }
@@ -112,19 +111,12 @@ class CalculatorFragment : Fragment(), SelectCurrencyDialogCallback, KoinCompone
             val response = viewModel.calculate()
 
             when (response.flag) {
-                ResponseStatus.NOT_VALID -> requireActivity().runOnUiThread {
+                CalculateResponseStatus.NOT_VALID -> requireActivity().runOnUiThread {
                     setErrorsOnNonValidData(response.error as CalculateRequestValidatorResponse)
                     Toast.makeText(requireContext(), "data is not valid", Toast.LENGTH_LONG)
                         .show()
                 }
-                ResponseStatus.FAILED -> requireActivity().runOnUiThread {
-                    Toast.makeText(
-                        requireContext(),
-                        response.error.toString(),
-                        Toast.LENGTH_LONG
-                    ).show()
-                }
-                ResponseStatus.SUCCESS -> requireActivity().runOnUiThread {
+                CalculateResponseStatus.VALID -> requireActivity().runOnUiThread {
                     resetErrors()
                     setResult(response.amount!!)
                 }

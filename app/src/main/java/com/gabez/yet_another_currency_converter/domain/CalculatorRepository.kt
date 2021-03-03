@@ -1,11 +1,9 @@
 package com.gabez.yet_another_currency_converter.domain
 
-import com.gabez.yet_another_currency_converter.domain.request.CalculateRequest
-import com.gabez.yet_another_currency_converter.data.apiService.responses.CalculateResponse
-import com.gabez.yet_another_currency_converter.data.apiService.responses.GetAllCurrenciesResponse
+import com.gabez.data_access.common.GetCurrenciesResponse
 import com.gabez.yet_another_currency_converter.entities.CurrencyForView
 
 interface CalculatorRepository {
-    suspend fun getAllCurrencies(hasInternetConnection: Boolean): GetAllCurrenciesResponse
+    suspend fun getAllCurrencies(hasInternetConnection: Boolean): GetCurrenciesResponse
     suspend fun markCurrency(isFavourite: Boolean, currency: CurrencyForView)
 }

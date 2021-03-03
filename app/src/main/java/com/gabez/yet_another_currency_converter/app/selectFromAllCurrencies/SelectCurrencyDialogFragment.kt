@@ -12,12 +12,13 @@ import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.MutableLiveData
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.gabez.data_access.entities.CurrencyUniversal
+import com.gabez.data_access.common.ResponseStatus
 import com.gabez.yet_another_currency_converter.R
 import com.gabez.yet_another_currency_converter.app.selectFromAllCurrencies.currencyList.AllCurrenciesListAdapter
 import com.gabez.yet_another_currency_converter.app.selectFromAllCurrencies.currencyList.CurrencyListCallback
 import com.gabez.yet_another_currency_converter.entities.CurrencyForView
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
-import com.gabez.yet_another_currency_converter.data.apiService.responses.ResponseStatus
 import com.google.android.material.textfield.TextInputEditText
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.GlobalScope
@@ -27,7 +28,7 @@ import kotlinx.coroutines.launch
 import org.koin.core.KoinComponent
 import org.koin.core.inject
 
-
+//TODO: Fix adding to favourites
 class SelectCurrencyDialogFragment(
     private val callback: SelectCurrencyDialogCallback,
     private val spinnerIndex: CurrencySpinnerIndex
@@ -93,9 +94,13 @@ class SelectCurrencyDialogFragment(
             viewModel.getCurrencies().collect { response ->
                 when(response.flag){
                     ResponseStatus.SUCCESS -> {
-                        currencyList.postValue(response.data as List<CurrencyForView>)
-                        Log.v("CURRENCIES", response.data.toString())
-                        (response.data as List<CurrencyForView>).map { item -> Log.v("CURRENCIES", item.code) }
+                        currencyList.postValue((response.data as List<CurrencyUniversal>).map{
+                            CurrencyForView(
+                                code = it.code,
+                                currencyName = it.currencyName,
+                                mid = it.mid
+                            )
+                        })
                     }
                     ResponseStatus.FAILED -> nothingFoundText.text = response.data.toString()
                 }

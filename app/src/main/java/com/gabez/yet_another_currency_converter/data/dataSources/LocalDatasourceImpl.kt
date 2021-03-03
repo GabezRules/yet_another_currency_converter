@@ -1,26 +1,19 @@
 package com.gabez.yet_another_currency_converter.data.dataSources
 
-import com.gabez.yet_another_currency_converter.data.apiService.responses.GetAllCurrenciesResponse
-import com.gabez.yet_another_currency_converter.data.apiService.responses.ResponseStatus
-import com.gabez.yet_another_currency_converter.data.localDb.CurrencyDatabase
+import com.gabez.data_access.common.GetCurrenciesResponse
+import com.gabez.data_access.entities.CurrencyUniversal
+import com.gabez.data_access.localDbFacade.LocalDbFacade
 import com.gabez.yet_another_currency_converter.entities.CurrencyForView
 
-class LocalDatasourceImpl(private val localDb: CurrencyDatabase ): LocalDatasource {
+class LocalDatasourceImpl(private val facade: LocalDbFacade): LocalDatasource {
 
-    override suspend fun getCurrencies(): GetAllCurrenciesResponse {
-        return GetAllCurrenciesResponse(
-            flag = ResponseStatus.SUCCESS,
-            data = localDb.dao().getAllCurrencies().map { currencyEntity ->
-                CurrencyForView(
-                    code = currencyEntity.code,
-                    currencyName = currencyEntity.currencyName,
-                    mid = currencyEntity.mid,
-                    isFavourite = currencyEntity.isFavourite
-            ) }
-        )
+    override suspend fun getCurrencies(): GetCurrenciesResponse {
+        return facade.getCurrencies()
     }
 
     override suspend fun markCurrency(isFavourite: Boolean, currency: CurrencyForView) {
-        localDb.dao().setFavourite(currency.currencyName, isFavourite)
+        facade.markCurrency(currency.currencyName, isFavourite)
     }
+
+    override suspend fun getFavourites(): List<CurrencyUniversal> = facade.getFavCurrencies()
 }

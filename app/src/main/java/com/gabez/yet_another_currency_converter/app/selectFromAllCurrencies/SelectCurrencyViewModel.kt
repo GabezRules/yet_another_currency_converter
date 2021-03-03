@@ -3,8 +3,8 @@ package com.gabez.yet_another_currency_converter.app.selectFromAllCurrencies
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.gabez.yet_another_currency_converter.data.apiService.responses.GetAllCurrenciesResponse
-import com.gabez.yet_another_currency_converter.data.apiService.responses.ResponseStatus
+import com.gabez.data_access.common.GetCurrenciesResponse
+import com.gabez.data_access.common.ResponseStatus
 import com.gabez.yet_another_currency_converter.domain.usecases.GetAllCurrenciesUsecase
 import com.gabez.yet_another_currency_converter.domain.usecases.MarkCurrencyUsecase
 import com.gabez.yet_another_currency_converter.entities.CurrencyForView
@@ -24,7 +24,7 @@ class SelectCurrencyViewModel(private val getAllUsecase: GetAllCurrenciesUsecase
     suspend fun unmarkCurrency(currency: CurrencyForView) = markUsecase.invoke(false, currency)
 
     @ExperimentalCoroutinesApi
-    suspend fun getCurrencies(): Flow<GetAllCurrenciesResponse> = channelFlow {
+    suspend fun getCurrencies(): Flow<GetCurrenciesResponse> = channelFlow {
 
         _isLoading.postValue(true)
         val response = getAllUsecase.invoke()

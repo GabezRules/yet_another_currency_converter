@@ -4,21 +4,14 @@ import android.content.Context
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.gabez.yet_another_currency_converter.app.calculator.calculateRequest.ValidateRequest
 import com.gabez.yet_another_currency_converter.app.calculator.calculateRequest.CalculateRequestValidator
-import com.gabez.yet_another_currency_converter.data.apiService.responses.CalculateResponse
-import com.gabez.yet_another_currency_converter.data.apiService.responses.ResponseStatus
+import com.gabez.yet_another_currency_converter.domain.calculations.CalculateResponse
+import com.gabez.nbp_api.apiService.responses.ApiResponseStatus
+import com.gabez.yet_another_currency_converter.domain.calculations.CalculateResponseStatus
 import com.gabez.yet_another_currency_converter.domain.usecases.CalculateUsecase
 import com.gabez.yet_another_currency_converter.entities.CurrencyForView
 import com.gabez.yet_another_currency_converter.internetConnection.InternetConnectionMonitor
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.channels.awaitClose
-import kotlinx.coroutines.channels.sendBlocking
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.channelFlow
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.launch
 
 class CalculatorViewModel(private val context: Context, private val connectionMonitor: InternetConnectionMonitor): ViewModel() {
     private var valueToCalculate: Float? = 0f
@@ -58,7 +51,7 @@ class CalculatorViewModel(private val context: Context, private val connectionMo
         val response = CalculateRequestValidator.isValid(calculateRequest)
 
         return if(response.isValid) usecase.invoke()
-        else CalculateResponse(ResponseStatus.NOT_VALID, null, response)
+        else CalculateResponse(CalculateResponseStatus.NOT_VALID, null, response)
     }
 
     fun swapCurrencies(){
