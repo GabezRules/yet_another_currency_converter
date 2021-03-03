@@ -13,15 +13,30 @@ class ChartViewModel(
     private val getDataUsecase: GetChartDataUsecase,
     private val getFavsUsecase: GetFavouriteCurrenciesUsecase
 ) : ViewModel() {
-    val dateFrom: MutableLiveData<String> = MutableLiveData("yyyy-mm-dd")
-    val dateTo: MutableLiveData<String> = MutableLiveData("yyyy-mm-dd")
-    private var currency: CurrencyForView? = null
+    private val dateFrom: MutableLiveData<String> = MutableLiveData("yyyy-MM-dd")
+    private val dateTo: MutableLiveData<String> = MutableLiveData("yyyy-MM-dd")
+    private val currency: MutableLiveData<CurrencyForView?> = MutableLiveData()
+
+    fun setDateTo(date: String){
+        dateTo.postValue(date)
+        getDataUsecase.dateTo = date
+    }
+
+    fun setDateFrom(date: String){
+        dateFrom.postValue(date)
+        getDataUsecase.dateFrom = date
+    }
+
+    fun setCurrency(newCurrency: CurrencyForView) {
+        currency.value = newCurrency
+        getDataUsecase.currency = newCurrency
+    }
 
     fun getChartData(): ChartDataRequestValidatorResponse {
         val request = ChartDataRequest(
             firstDate = dateFrom.value!!,
             secondDate = dateTo.value!!,
-            currencyName = currency?.currencyName
+            currencyName = currency.value?.currencyName
         )
 
         val validatorResponse = ChartDataRequestValidator.isValid(request)

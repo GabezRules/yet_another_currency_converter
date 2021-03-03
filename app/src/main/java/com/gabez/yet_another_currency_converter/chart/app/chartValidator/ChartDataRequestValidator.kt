@@ -17,8 +17,8 @@ class ChartDataRequestValidator {
 
         private fun isDateValid(date: String): Boolean{
             return try{
-                val check = SimpleDateFormat("yyyy-MM-dd").parse(date)
-                check != null
+                SimpleDateFormat("yyyy-MM-dd").parse(date)
+                true
             }catch (e: Exception){
                 false
             }

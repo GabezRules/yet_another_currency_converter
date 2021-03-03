@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.LinearSnapHelper
@@ -95,6 +96,14 @@ class ChartFragment : Fragment(), KoinComponent {
             currentDatePicker = dateFrom
             showDialog()
         }
+
+        dateTo.doOnTextChanged { text, start, before, count ->
+            viewModel.setDateTo(text.toString())
+        }
+
+        dateFrom.doOnTextChanged { text, start, before, count ->
+            viewModel.setDateFrom(text.toString())
+        }
     }
 
 
@@ -111,8 +120,10 @@ class ChartFragment : Fragment(), KoinComponent {
                 val date = sdf.format(calendar.time)
                 currentDatePicker!!.setText(date)
                 when(currentDatePicker!!.id){
-                    R.id.dateToBody -> viewModel.dateTo.value = date
-                    R.id.dateFromBody -> viewModel.dateFrom.value = date
+                    R.id.dateToBody -> {
+                        viewModel.setDateTo(date)
+                    }
+                    R.id.dateFromBody -> viewModel.setDateFrom(date)
                 }
             }, calendar[Calendar.YEAR], calendar[Calendar.MONTH], calendar[Calendar.DAY_OF_MONTH]
         )
