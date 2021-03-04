@@ -5,7 +5,7 @@ import com.gabez.data_access.entities.CurrencyUniversal
 import com.gabez.data_access.localDbFacade.LocalDbFacade
 import com.gabez.yet_another_currency_converter.calculator.entities.CurrencyForView
 
-class LocalDatasourceImpl(private val facade: LocalDbFacade): LocalDatasource {
+class LocalDatasourceCalculatorImpl(private val facade: LocalDbFacade): LocalDatasourceCalculator {
 
     override suspend fun getCurrencies(): GetCurrenciesResponse {
         return facade.getCurrencies()

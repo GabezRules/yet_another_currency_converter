@@ -1,4 +1,4 @@
-package com.gabez.yet_another_currency_converter.calculator.app.selectFromAllCurrencies
+package com.gabez.yet_another_currency_converter.selectCurrency.app
 
 import android.os.Bundle
 import android.util.Log
@@ -15,9 +15,11 @@ import androidx.recyclerview.widget.RecyclerView
 import com.gabez.data_access.entities.CurrencyUniversal
 import com.gabez.data_access.common.ResponseStatus
 import com.gabez.yet_another_currency_converter.R
-import com.gabez.yet_another_currency_converter.calculator.app.selectFromAllCurrencies.currencyList.AllCurrenciesListAdapter
-import com.gabez.yet_another_currency_converter.calculator.app.selectFromAllCurrencies.currencyList.CurrencyListCallback
 import com.gabez.yet_another_currency_converter.calculator.entities.CurrencyForView
+import com.gabez.yet_another_currency_converter.selectCurrency.app.currencyList.CurrencyListCallback
+import com.gabez.yet_another_currency_converter.selectCurrency.CurrencySpinnerIndex
+import com.gabez.yet_another_currency_converter.selectCurrency.SelectCurrencyDialogCallback
+import com.gabez.yet_another_currency_converter.selectCurrency.app.currencyList.AllCurrenciesListAdapter
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
 import com.google.android.material.textfield.TextInputEditText
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -29,6 +31,8 @@ import org.koin.core.KoinComponent
 import org.koin.core.inject
 
 //TODO: Fix adding to favourites
+//TODO: Refactor to not use spinner index
+//TODO: Add data and domain layer
 class SelectCurrencyDialogFragment(
     private val callback: SelectCurrencyDialogCallback,
     private val spinnerIndex: CurrencySpinnerIndex

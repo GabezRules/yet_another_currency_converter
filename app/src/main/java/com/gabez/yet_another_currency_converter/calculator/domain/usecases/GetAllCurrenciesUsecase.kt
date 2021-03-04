@@ -5,5 +5,5 @@ import com.gabez.yet_another_currency_converter.calculator.domain.CalculatorRepo
 import com.gabez.yet_another_currency_converter.internetConnection.InternetConnectionMonitor
 
 class GetAllCurrenciesUsecase(private val repo: CalculatorRepository, private val connectionMonitor: InternetConnectionMonitor) {
-    suspend fun invoke(): GetCurrenciesResponse = repo.getAllCurrencies(connectionMonitor.value!!)
+    suspend fun invoke(): GetCurrenciesResponse = repo.getAllCurrencies(connectionMonitor.value?: false)
 }

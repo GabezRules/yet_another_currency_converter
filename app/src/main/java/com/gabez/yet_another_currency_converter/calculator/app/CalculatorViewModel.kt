@@ -1,11 +1,11 @@
-package com.gabez.yet_another_currency_converter.calculator.app.calculator
+package com.gabez.yet_another_currency_converter.calculator.app
 
 import android.content.Context
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.gabez.yet_another_currency_converter.calculator.app.calculator.calculateValidator.ValidateRequest
-import com.gabez.yet_another_currency_converter.calculator.app.calculator.calculateValidator.CalculateRequestValidator
+import com.gabez.yet_another_currency_converter.calculator.app.calculateValidator.ValidateRequest
+import com.gabez.yet_another_currency_converter.calculator.app.calculateValidator.CalculateRequestValidator
 import com.gabez.yet_another_currency_converter.calculator.domain.calculations.CalculateResponse
 import com.gabez.yet_another_currency_converter.calculator.domain.calculations.CalculateResponseStatus
 import com.gabez.yet_another_currency_converter.calculator.domain.usecases.CalculateUsecase

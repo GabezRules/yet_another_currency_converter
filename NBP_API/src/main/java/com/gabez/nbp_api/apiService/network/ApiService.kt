@@ -12,4 +12,12 @@ interface ApiService {
 
     @GET("tables/{table}/?format=json")
     fun getAllFromTable(@Path("table") table: String): Call<List<CurrencyTableFromAPI>>
+
+    @GET("rates/{table}/{code}/{startDate}/{endDate}/?format=json")
+    fun getRates(
+        @Path("table") table: String,
+        @Path("code") code: String,
+        @Path("startDate") startDate: String,
+        @Path("endDate") endDate: String
+    ): Call<CurrencyFromAPI>
 }

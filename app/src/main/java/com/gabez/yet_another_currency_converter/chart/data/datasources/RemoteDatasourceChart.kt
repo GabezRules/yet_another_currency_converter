@@ -1,10 +1,8 @@
-package com.gabez.data_access.apiFacade
+package com.gabez.yet_another_currency_converter.chart.data.datasources
 
-import com.gabez.data_access.common.GetCurrenciesResponse
 import com.gabez.data_access.common.GetRatesResponse
 
-interface ApiFacade {
-    suspend fun getCurrencies(): GetCurrenciesResponse
+interface RemoteDatasourceChart {
     suspend fun getRates(
         code: String,
         currencyName: String,
