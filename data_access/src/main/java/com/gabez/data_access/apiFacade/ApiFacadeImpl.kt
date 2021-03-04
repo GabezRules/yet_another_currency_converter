@@ -61,15 +61,22 @@ class ApiFacadeImpl(private val networkClient: NetworkClient) : ApiFacade {
                 ApiResponseStatus.SUCCESS -> ResponseStatus.SUCCESS
             },
             error = this.error,
-            data = this.data?.rates?.map { rate -> rate.toUniversalRate()}
+            data = this.data?.let {
+                currency ->
+                currency.rates.map{
+                    ratefromAPI -> ratefromAPI.toUniversalRate(currency.code, currency.currency)
+                }
+            }
         )
     }
 
-    private fun SingleRateFromAPI.toUniversalRate(): RateUniversal{
+    private fun SingleRateFromAPI.toUniversalRate(parentCode: String, parentName: String): RateUniversal{
         return RateUniversal(
             no = this.no,
             mid = this.mid,
-            effectiveDate = SimpleDateFormat("yyyy-MM-dd").parse(this.effectiveDate)
+            effectiveDate = SimpleDateFormat("yyyy-MM-dd").parse(this.effectiveDate),
+            parentCode = parentCode,
+            parentCurrencyName = parentName
         )
     }
 

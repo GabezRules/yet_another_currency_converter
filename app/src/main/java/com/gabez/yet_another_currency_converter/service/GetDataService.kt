@@ -17,9 +17,8 @@ import com.gabez.data_access.entities.CurrencyUniversal
 import com.gabez.data_access.localDbFacade.LocalDbFacade
 import com.gabez.yet_another_currency_converter.R
 import com.gabez.yet_another_currency_converter.MainActivity
-import com.gabez.nbp_api.apiService.network.NetworkClient
 import com.gabez.local_database.CurrencyDatabase
-import com.gabez.local_database.CurrencyEntity
+import com.gabez.local_database.entities.CurrencyEntity
 import com.gabez.yet_another_currency_converter.internetConnection.InternetConnectionMonitor
 import kotlinx.coroutines.*
 import org.koin.core.KoinComponent
@@ -113,7 +112,7 @@ class GetDataService : Service(), KoinComponent {
 
             }
 
-            localDatabase.dao().updateData(currencies.toEntityList())
+            localDatabase.dao().updateCurrencies(currencies.toEntityList())
         }
     }
 

@@ -14,6 +14,10 @@ class ChartRepositoryImpl(private val localDatasource: LocalDatasourceChart, pri
         code: String,
         currencyName: String,
         dateFrom: String,
-        dateTo: String
-    ): GetRatesResponse = remoteDatasource.getRates(code, currencyName, dateFrom, dateTo)
+        dateTo: String,
+        hasInternetConnection: Boolean
+    ): GetRatesResponse{
+        return if(hasInternetConnection) remoteDatasource.getRates(code, currencyName, dateFrom, dateTo)
+        else localDatasource.getRates(code, currencyName, dateFrom, dateTo)
+    }
 }
