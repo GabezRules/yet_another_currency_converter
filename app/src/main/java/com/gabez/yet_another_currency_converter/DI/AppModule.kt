@@ -38,7 +38,7 @@ val appModule = module {
     single { GetAllCurrenciesUsecase(get(), get()) }
     single { MarkCurrencyUsecase(get()) }
     single { GetFavouriteCurrenciesUsecase(get()) }
-    single { GetChartDataUsecase() }
+    single { GetChartDataUsecase(get()) }
 
     single { CalculatorRepositoryImpl(get(), get()) as CalculatorRepository }
     single { ChartRepositoryImpl(get(), get()) as ChartRepository }

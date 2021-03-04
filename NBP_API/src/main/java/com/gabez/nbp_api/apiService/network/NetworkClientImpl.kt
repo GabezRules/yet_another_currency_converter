@@ -66,7 +66,9 @@ class NetworkClientImpl : NetworkClient {
         dateTo: String
     ): ApiGetCurrencyResponse {
         val ratesFromA = service.getRates("a", code.toLowerCase(), dateFrom, dateTo).awaitResponse()
-        val ratesFromB = service.getRates("b", code, dateFrom.toLowerCase(), dateTo).awaitResponse()
+        val ratesFromB = service.getRates("b", code.toLowerCase(), dateFrom, dateTo).awaitResponse()
+
+        val req = service.getRates("a", code.toLowerCase(), dateFrom, dateTo).request()
 
         var data: CurrencyFromAPI? = null
         var error: String? = null
@@ -75,7 +77,7 @@ class NetworkClientImpl : NetworkClient {
         when {
             ratesFromA.isSuccessful -> {
                 ratesFromA.body()?.let {
-                    if (it.code == code && it.currency == currencyName) {
+                    if (it.code.toLowerCase() == code.toLowerCase() && it.currency.toLowerCase() == currencyName.toLowerCase()) {
                         data = it
                         status = ApiResponseStatus.SUCCESS
                     }
@@ -83,13 +85,13 @@ class NetworkClientImpl : NetworkClient {
             }
             ratesFromB.isSuccessful -> {
                 ratesFromB.body()?.let {
-                    if (it.code == code && it.currency == currencyName) {
+                    if (it.code.toLowerCase() == code.toLowerCase() && it.currency.toLowerCase() == currencyName.toLowerCase()) {
                         data = it
                         status = ApiResponseStatus.SUCCESS
                     }
                 }
             }
-            else -> error = ratesFromA.raw().message()+" "+ratesFromA.raw().code()
+            else -> error = ratesFromA.raw().message()+" "+ratesFromA.raw().code()+" "+req
         }
 
         return ApiGetCurrencyResponse(

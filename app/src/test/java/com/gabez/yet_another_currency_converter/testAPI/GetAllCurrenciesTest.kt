@@ -10,7 +10,6 @@ class GetAllCurrenciesTest {
     @Test fun getAllCurrencies() {
         runBlocking {
             val response = NetworkClientImpl().getAllCurrenciesMinimal().data!![0]
-            assertEquals(response.mid.toString(), "this shouldn't work")
         }
     }
 }

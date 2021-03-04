@@ -15,7 +15,10 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.channelFlow
 import kotlinx.coroutines.launch
 
-class SelectCurrencyViewModel(private val getAllUsecase: GetAllCurrenciesUsecase, private val markUsecase: MarkCurrencyUsecase) : ViewModel() {
+class SelectCurrencyViewModel(
+    private val getAllUsecase: GetAllCurrenciesUsecase,
+    private val markUsecase: MarkCurrencyUsecase
+) : ViewModel() {
     private val _isLoading: MutableLiveData<Boolean> = MutableLiveData(false)
     val isLoading: LiveData<Boolean> = _isLoading
 
@@ -29,22 +32,10 @@ class SelectCurrencyViewModel(private val getAllUsecase: GetAllCurrenciesUsecase
         _isLoading.postValue(true)
         val response = getAllUsecase.invoke()
 
-        when (response.flag) {
-            ResponseStatus.FAILED -> launch {
-                _isLoading.postValue(false)
-                sendBlocking(response)
-                close()
-            }
-            ResponseStatus.SUCCESS -> launch {
-                _isLoading.postValue(false)
-                sendBlocking(response)
-                close()
-            }
-            else -> launch {
-                _isLoading.postValue(false)
-                sendBlocking(response)
-                close()
-            }
+        launch {
+            _isLoading.postValue(false)
+            sendBlocking(response)
+            close()
         }
 
         awaitClose()

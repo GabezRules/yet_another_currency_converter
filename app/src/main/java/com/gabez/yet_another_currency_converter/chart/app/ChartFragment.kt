@@ -3,10 +3,12 @@ package com.gabez.yet_another_currency_converter.chart.app
 import android.app.DatePickerDialog
 import android.content.res.ColorStateList
 import android.os.Bundle
+import android.provider.Settings
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import android.widget.Toast
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.MutableLiveData
@@ -14,6 +16,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.LinearSnapHelper
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.SnapHelper
+import com.gabez.data_access.common.ResponseStatus
 import com.gabez.yet_another_currency_converter.R
 import com.gabez.yet_another_currency_converter.calculator.entities.CurrencyForView
 import com.gabez.yet_another_currency_converter.chart.app.chartGenerator.CustomMarker
@@ -61,7 +64,8 @@ class ChartFragment : Fragment(), KoinComponent, SelectCurrencyDialogCallback {
 
     private val viewModel: ChartViewModel by inject()
 
-    private var favouriteCurrencies: MutableLiveData<List<CurrencyForFavs>> = MutableLiveData(listOf())
+    private var favouriteCurrencies: MutableLiveData<List<CurrencyForFavs>> =
+        MutableLiveData(listOf())
 
     @ExperimentalCoroutinesApi
     override fun onCreateView(
@@ -83,11 +87,11 @@ class ChartFragment : Fragment(), KoinComponent, SelectCurrencyDialogCallback {
         return view
     }
 
-    private fun observeViewModelData(){
+    private fun observeViewModelData() {
         viewModel.currency.observe(viewLifecycleOwner, {
             it?.let {
-                chosenCurrencyText.setText("Chosen currency: "+it.currencyName)
-            }?: chosenCurrencyText.setText("Chosen currency: "+"NONE")
+                chosenCurrencyText.setText("Chosen currency: " + it.currencyName)
+            } ?: chosenCurrencyText.setText("Chosen currency: " + "NONE")
         })
 
         viewModel.dateFrom.observe(viewLifecycleOwner, {
@@ -99,13 +103,11 @@ class ChartFragment : Fragment(), KoinComponent, SelectCurrencyDialogCallback {
         })
     }
 
-    private fun getFavCurrencies(){
+    private fun getFavCurrencies() {
         GlobalScope.launch {
-            viewModel.getFavouriteCurrencies().collect {
-                    currencies ->
+            viewModel.getFavouriteCurrencies().collect { currencies ->
 
-                val currenciesForFavs = currencies.map {
-                        currencyUniversal ->
+                val currenciesForFavs = currencies.map { currencyUniversal ->
                     CurrencyForFavs(
                         code = currencyUniversal.code,
                         currencyName = currencyUniversal.currencyName,
@@ -119,10 +121,9 @@ class ChartFragment : Fragment(), KoinComponent, SelectCurrencyDialogCallback {
         }
     }
 
-    private fun observeFavourites(){
-        favouriteCurrencies.observe(viewLifecycleOwner, {
-            list ->
-            if(list.isEmpty()) noFavsAlert.visibility = View.VISIBLE
+    private fun observeFavourites() {
+        favouriteCurrencies.observe(viewLifecycleOwner, { list ->
+            if (list.isEmpty()) noFavsAlert.visibility = View.VISIBLE
             else View.GONE
 
             adapter.data = list
@@ -141,7 +142,7 @@ class ChartFragment : Fragment(), KoinComponent, SelectCurrencyDialogCallback {
         chosenCurrencyText = view.findViewById(R.id.chosenCurrencyText)
 
         seeAllCurrencies = view.findViewById(R.id.seeAllCurrencies)
-        seeAllCurrencies.setOnClickListener{
+        seeAllCurrencies.setOnClickListener {
             SelectCurrencyDialogFragment(this@ChartFragment, CurrencySpinnerIndex.NONE)
                 .show(parentFragmentManager, "SELECT_CURRENCY")
         }
@@ -150,28 +151,50 @@ class ChartFragment : Fragment(), KoinComponent, SelectCurrencyDialogCallback {
         generateChartButton.setOnClickListener {
             dateFrom.error = null
             dateTo.error = null
-            val getChartDataResponse = viewModel.getChartData()
-            if(!getChartDataResponse.isValid) setErrors(getChartDataResponse)
+            getChartData()
         }
 
         noFavsAlert = view.findViewById(R.id.noFavsAlert)
     }
 
-    private fun setErrors(response: ChartDataRequestValidatorResponse){
-        if(!response.isFirstDateValid) dateFrom.error = "Enter a valid date!"
-        if(!response.isSecondDateValid) dateTo.error = "Enter a valid date!"
-        if(!response.isCurrencyValid) chosenCurrencyText.let {
+    @ExperimentalCoroutinesApi
+    private fun getChartData() {
+        GlobalScope.launch {
+            viewModel.getChartData().collect { response ->
+                when (response.flag) {
+                    ResponseStatus.SUCCESS -> requireActivity().runOnUiThread {
+                        Toast.makeText(requireContext(), "success", Toast.LENGTH_SHORT).show()
+                    }
+                    ResponseStatus.FAILED -> {
+                        if (response.error is ChartDataRequestValidatorResponse)
+                            requireActivity().runOnUiThread {
+                                setErrors(response.error as ChartDataRequestValidatorResponse)
+                            }
+                        else requireActivity().runOnUiThread {
+                            Toast.makeText(requireContext(), response.error.toString(), Toast.LENGTH_SHORT).show()
+                        }
+
+                    }
+                }
+            }
+        }
+    }
+
+    private fun setErrors(response: ChartDataRequestValidatorResponse) {
+        if (!response.isFirstDateValid) dateFrom.error = "Enter a valid date!"
+        if (!response.isSecondDateValid) dateTo.error = "Enter a valid date!"
+        if (!response.isCurrencyValid) chosenCurrencyText.let {
             it.text = "CHOOSE A CURRENCY"
             it.setTextColor(ColorStateList.valueOf(requireContext().resources.getColor(R.color.colorPrimaryDark)))
         }
 
-        if(!response.isChronologyValid) chosenCurrencyText.let{
+        if (!response.isChronologyValid) chosenCurrencyText.let {
             it.text = "Something's wrong with the chronology here..."
             it.setTextColor(ColorStateList.valueOf(requireContext().resources.getColor(R.color.colorPrimaryDark)))
         }
     }
 
-    private fun initDatePickers(){
+    private fun initDatePickers() {
         dateTo.setOnClickListener {
             currentDatePicker = dateTo
             showDialog()
@@ -205,7 +228,7 @@ class ChartFragment : Fragment(), KoinComponent, SelectCurrencyDialogCallback {
                 val sdf = SimpleDateFormat(myFormat, Locale.getDefault())
                 val date = sdf.format(calendar.time)
                 //currentDatePicker!!.setText(date)
-                when(currentDatePicker!!.id){
+                when (currentDatePicker!!.id) {
                     R.id.dateToBody -> {
                         viewModel.setDateTo(date)
                     }
@@ -226,7 +249,7 @@ class ChartFragment : Fragment(), KoinComponent, SelectCurrencyDialogCallback {
     }
 
     private fun initRecyclerViewFavCurrenciesForChart() {
-        adapter = ChartCurrenciesAdapter(favouriteCurrencies.value!!,requireContext())
+        adapter = ChartCurrenciesAdapter(favouriteCurrencies.value!!, requireContext())
         val snapHelper: SnapHelper = LinearSnapHelper()
         snapHelper.attachToRecyclerView(favsRecyclerView)
 
@@ -284,9 +307,9 @@ class ChartFragment : Fragment(), KoinComponent, SelectCurrencyDialogCallback {
     }
 
     override fun setCurrency(currency: CurrencyForView, spinnerIndex: CurrencySpinnerIndex) {
-        if(currency.isFavourite){
+        if (currency.isFavourite) {
             otherCurrency.visibility = View.GONE
-        }else{
+        } else {
             otherCurrency.visibility = View.VISIBLE
         }
     }

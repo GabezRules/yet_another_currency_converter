@@ -18,7 +18,7 @@ class GetRatesTest {
         runBlocking {
             val client = NetworkClientImpl()
             val rates = client.getRates("usd", "dolar amerykański", "2020-01-01", "2020-02-02")
-            assertEquals(rates.error, "")
+            assertEquals(rates.error, null)
         }
     }
 }
