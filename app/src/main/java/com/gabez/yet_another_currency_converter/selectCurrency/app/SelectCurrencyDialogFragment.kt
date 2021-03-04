@@ -32,6 +32,7 @@ import org.koin.core.inject
 
 //TODO: Fix adding to favourites
 //TODO: Refactor to not use spinner index
+//TODO: Add data and domain layer
 class SelectCurrencyDialogFragment(
     private val callback: SelectCurrencyDialogCallback,
     private val spinnerIndex: CurrencySpinnerIndex

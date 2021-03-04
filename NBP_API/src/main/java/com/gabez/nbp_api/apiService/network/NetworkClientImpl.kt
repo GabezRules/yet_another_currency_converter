@@ -2,7 +2,7 @@ package com.gabez.nbp_api.apiService.network
 
 import com.gabez.nbp_api.apiService.BASE_URL
 import com.gabez.nbp_api.apiService.entities.CurrencyFromAPI
-import com.gabez.nbp_api.apiService.entities.RateInCurrencyFromAPI
+import com.gabez.nbp_api.apiService.entities.SingleRateFromAPI
 import com.gabez.nbp_api.apiService.responses.*
 import retrofit2.Retrofit
 import retrofit2.awaitResponse
@@ -33,7 +33,7 @@ class NetworkClientImpl : NetworkClient {
                 allCurrencies.add(
                     CurrencyFromAPI(
                         item.code, item.currency, listOf(
-                            RateInCurrencyFromAPI("", "", item.mid)
+                            SingleRateFromAPI("", "", item.mid)
                         )
                     )
                 )
@@ -43,7 +43,7 @@ class NetworkClientImpl : NetworkClient {
                 allCurrencies.add(
                     CurrencyFromAPI(
                         item.code, item.currency, listOf(
-                            RateInCurrencyFromAPI("", "", item.mid)
+                            SingleRateFromAPI("", "", item.mid)
                         )
                     )
                 )
@@ -55,8 +55,47 @@ class NetworkClientImpl : NetworkClient {
             )
         } else ApiAllCurrenciesResponse(
             flag = ApiResponseStatus.FAILED,
-            error = currenciesFromA.errorBody().toString() + " " + currenciesFromB.errorBody()
-                .toString()
+            error = currenciesFromA.raw().message()+" "+currenciesFromA.raw().code()
+        )
+    }
+
+    override suspend fun getRates(
+        code: String,
+        currencyName: String,
+        dateFrom: String,
+        dateTo: String
+    ): ApiGetCurrencyResponse {
+        val ratesFromA = service.getRates("a", code.toLowerCase(), dateFrom, dateTo).awaitResponse()
+        val ratesFromB = service.getRates("b", code, dateFrom.toLowerCase(), dateTo).awaitResponse()
+
+        var data: CurrencyFromAPI? = null
+        var error: String? = null
+        var status: ApiResponseStatus = ApiResponseStatus.FAILED
+
+        when {
+            ratesFromA.isSuccessful -> {
+                ratesFromA.body()?.let {
+                    if (it.code == code && it.currency == currencyName) {
+                        data = it
+                        status = ApiResponseStatus.SUCCESS
+                    }
+                }
+            }
+            ratesFromB.isSuccessful -> {
+                ratesFromB.body()?.let {
+                    if (it.code == code && it.currency == currencyName) {
+                        data = it
+                        status = ApiResponseStatus.SUCCESS
+                    }
+                }
+            }
+            else -> error = ratesFromA.raw().message()+" "+ratesFromA.raw().code()
+        }
+
+        return ApiGetCurrencyResponse(
+            status = status,
+            data = data,
+            error = error
         )
     }
 }

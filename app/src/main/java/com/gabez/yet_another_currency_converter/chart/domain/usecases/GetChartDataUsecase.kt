@@ -1,4 +1,4 @@
-package com.gabez.yet_another_currency_converter.chart.domain
+package com.gabez.yet_another_currency_converter.chart.domain.usecases
 
 import com.gabez.yet_another_currency_converter.calculator.entities.CurrencyForView
 

@@ -1,6 +1,7 @@
 package com.gabez.yet_another_currency_converter.chart.app
 
 import android.app.DatePickerDialog
+import android.content.res.ColorStateList
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -8,6 +9,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.MutableLiveData
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.LinearSnapHelper
 import androidx.recyclerview.widget.RecyclerView
@@ -17,6 +19,7 @@ import com.gabez.yet_another_currency_converter.calculator.entities.CurrencyForV
 import com.gabez.yet_another_currency_converter.chart.app.chartGenerator.CustomMarker
 import com.gabez.yet_another_currency_converter.chart.app.chartValidator.ChartDataRequestValidatorResponse
 import com.gabez.yet_another_currency_converter.chart.app.topListView.ChartCurrenciesAdapter
+import com.gabez.yet_another_currency_converter.chart.entities.CurrencyForFavs
 import com.gabez.yet_another_currency_converter.selectCurrency.CurrencySpinnerIndex
 import com.gabez.yet_another_currency_converter.selectCurrency.SelectCurrencyDialogCallback
 import com.gabez.yet_another_currency_converter.selectCurrency.app.SelectCurrencyDialogFragment
@@ -27,6 +30,10 @@ import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.textfield.TextInputEditText
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 import org.koin.core.KoinComponent
 import org.koin.core.inject
 import java.text.SimpleDateFormat
@@ -37,6 +44,7 @@ class ChartFragment : Fragment(), KoinComponent, SelectCurrencyDialogCallback {
 
     private lateinit var lineChart: LineChart
     private lateinit var favsRecyclerView: RecyclerView
+    private lateinit var adapter: ChartCurrenciesAdapter
     private lateinit var otherCurrency: ViewGroup
 
     private lateinit var dateTo: TextInputEditText
@@ -49,8 +57,13 @@ class ChartFragment : Fragment(), KoinComponent, SelectCurrencyDialogCallback {
 
     private lateinit var generateChartButton: MaterialButton
 
+    private lateinit var noFavsAlert: ViewGroup
+
     private val viewModel: ChartViewModel by inject()
 
+    private var favouriteCurrencies: MutableLiveData<List<CurrencyForFavs>> = MutableLiveData(listOf())
+
+    @ExperimentalCoroutinesApi
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -63,8 +76,58 @@ class ChartFragment : Fragment(), KoinComponent, SelectCurrencyDialogCallback {
         generateChart()
         initRecyclerViewFavCurrenciesForChart()
         initDatePickers()
+        observeFavourites()
+        observeViewModelData()
+        getFavCurrencies()
 
         return view
+    }
+
+    private fun observeViewModelData(){
+        viewModel.currency.observe(viewLifecycleOwner, {
+            it?.let {
+                chosenCurrencyText.setText("Chosen currency: "+it.currencyName)
+            }?: chosenCurrencyText.setText("Chosen currency: "+"NONE")
+        })
+
+        viewModel.dateFrom.observe(viewLifecycleOwner, {
+            dateFrom.setText(it)
+        })
+
+        viewModel.dateTo.observe(viewLifecycleOwner, {
+            dateTo.setText(it)
+        })
+    }
+
+    private fun getFavCurrencies(){
+        GlobalScope.launch {
+            viewModel.getFavouriteCurrencies().collect {
+                    currencies ->
+
+                val currenciesForFavs = currencies.map {
+                        currencyUniversal ->
+                    CurrencyForFavs(
+                        code = currencyUniversal.code,
+                        currencyName = currencyUniversal.currencyName,
+                        isFavourite = true,
+                        isSelected = false
+                    )
+                }
+
+                favouriteCurrencies.postValue(currenciesForFavs)
+            }
+        }
+    }
+
+    private fun observeFavourites(){
+        favouriteCurrencies.observe(viewLifecycleOwner, {
+            list ->
+            if(list.isEmpty()) noFavsAlert.visibility = View.VISIBLE
+            else View.GONE
+
+            adapter.data = list
+            adapter.notifyDataSetChanged()
+        })
     }
 
     private fun initViews(view: View) {
@@ -90,12 +153,22 @@ class ChartFragment : Fragment(), KoinComponent, SelectCurrencyDialogCallback {
             val getChartDataResponse = viewModel.getChartData()
             if(!getChartDataResponse.isValid) setErrors(getChartDataResponse)
         }
+
+        noFavsAlert = view.findViewById(R.id.noFavsAlert)
     }
 
     private fun setErrors(response: ChartDataRequestValidatorResponse){
         if(!response.isFirstDateValid) dateFrom.error = "Enter a valid date!"
         if(!response.isSecondDateValid) dateTo.error = "Enter a valid date!"
-        if(!response.isCurrencyValid) chosenCurrencyText.text = "SELECT CURRENCY"
+        if(!response.isCurrencyValid) chosenCurrencyText.let {
+            it.text = "CHOOSE A CURRENCY"
+            it.setTextColor(ColorStateList.valueOf(requireContext().resources.getColor(R.color.colorPrimaryDark)))
+        }
+
+        if(!response.isChronologyValid) chosenCurrencyText.let{
+            it.text = "Something's wrong with the chronology here..."
+            it.setTextColor(ColorStateList.valueOf(requireContext().resources.getColor(R.color.colorPrimaryDark)))
+        }
     }
 
     private fun initDatePickers(){
@@ -131,7 +204,7 @@ class ChartFragment : Fragment(), KoinComponent, SelectCurrencyDialogCallback {
                 val myFormat = "yyyy-MM-dd"
                 val sdf = SimpleDateFormat(myFormat, Locale.getDefault())
                 val date = sdf.format(calendar.time)
-                currentDatePicker!!.setText(date)
+                //currentDatePicker!!.setText(date)
                 when(currentDatePicker!!.id){
                     R.id.dateToBody -> {
                         viewModel.setDateTo(date)
@@ -153,13 +226,11 @@ class ChartFragment : Fragment(), KoinComponent, SelectCurrencyDialogCallback {
     }
 
     private fun initRecyclerViewFavCurrenciesForChart() {
+        adapter = ChartCurrenciesAdapter(favouriteCurrencies.value!!,requireContext())
         val snapHelper: SnapHelper = LinearSnapHelper()
         snapHelper.attachToRecyclerView(favsRecyclerView)
 
-        val tempList =
-            arrayListOf<String>("PLN", "USD", "ABC", "CHRK", "CKR", "CDA", "ASD", "UWU", "ITP")
-
-        //favsRecyclerView.adapter = ChartCurrenciesAdapter(tempList, requireContext())
+        favsRecyclerView.adapter = adapter
         favsRecyclerView.layoutManager =
             LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
     }

@@ -2,12 +2,12 @@ package com.gabez.yet_another_currency_converter.calculator.data
 
 import com.gabez.data_access.common.GetCurrenciesResponse
 import com.gabez.data_access.common.ResponseStatus
-import com.gabez.yet_another_currency_converter.calculator.data.dataSources.LocalDatasource
-import com.gabez.yet_another_currency_converter.calculator.data.dataSources.RemoteDatasource
+import com.gabez.yet_another_currency_converter.calculator.data.dataSources.LocalDatasourceCalculator
+import com.gabez.yet_another_currency_converter.calculator.data.dataSources.RemoteDatasourceCalculator
 import com.gabez.yet_another_currency_converter.calculator.domain.CalculatorRepository
 import com.gabez.yet_another_currency_converter.calculator.entities.CurrencyForView
 
-class CalculatorRepositoryImpl(private val localDatasource: LocalDatasource, private val remoteDatasource: RemoteDatasource) : CalculatorRepository {
+class CalculatorRepositoryImpl(private val localDatasource: LocalDatasourceCalculator, private val remoteDatasource: RemoteDatasourceCalculator) : CalculatorRepository {
 
     override suspend fun getAllCurrencies(hasInternetConnection: Boolean): GetCurrenciesResponse {
         return if (hasInternetConnection) {

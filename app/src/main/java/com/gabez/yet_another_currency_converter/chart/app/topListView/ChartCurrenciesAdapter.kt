@@ -11,7 +11,7 @@ import com.gabez.yet_another_currency_converter.R
 import com.gabez.yet_another_currency_converter.chart.entities.CurrencyForFavs
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 
-class ChartCurrenciesAdapter(private var data: List<CurrencyForFavs>, private var context: Context) :
+class ChartCurrenciesAdapter(var data: List<CurrencyForFavs>, private var context: Context) :
     RecyclerView.Adapter<ChartCurrenciesAdapter.ViewHolder>() {
     inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         var currencyText: TextView = view.findViewById(R.id.currencyText)
@@ -25,6 +25,12 @@ class ChartCurrenciesAdapter(private var data: List<CurrencyForFavs>, private va
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.currencyText.text = data[position].code
+        holder.background.setOnClickListener {
+            for(item in data) item.isSelected = false
+            data[position].isSelected = true
+            this@ChartCurrenciesAdapter.notifyDataSetChanged()
+        }
+
         if(data[position].isSelected) holder.background.backgroundTintList = ColorStateList.valueOf(context.resources.getColor(R.color.colorPrimaryDark))
 
     }
