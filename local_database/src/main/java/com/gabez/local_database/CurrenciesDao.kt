@@ -4,6 +4,8 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Transaction
+import com.gabez.local_database.entities.CurrencyEntity
+import com.gabez.local_database.entities.RateEntity
 
 @Dao
 interface CurrenciesDao {
@@ -21,14 +23,29 @@ interface CurrenciesDao {
     fun getAllFavourites(): List<CurrencyEntity>
 
     @Insert
-    fun insertAll(users: List<CurrencyEntity>)
+    fun insertAllCurrencies(users: List<CurrencyEntity>)
 
     @Query("DELETE FROM currency")
-    fun deleteAll()
+    fun deleteAllCurrencies()
 
     @Transaction
-    fun updateData(users: List<CurrencyEntity>) {
-        deleteAll()
-        insertAll(users)
+    fun updateCurrencies(users: List<CurrencyEntity>) {
+        deleteAllCurrencies()
+        insertAllCurrencies(users)
+    }
+
+    @Query("SELECT * FROM rate WHERE parentCurrencyName = :parentName AND parentCode = :code AND NOT (effectiveDate > :dateFrom OR effectiveDate < :dateTo)")
+    fun getRatesFromCurrency(parentName: String, code: String, dateFrom: String, dateTo: String): List<RateEntity>
+
+    @Insert
+    fun insertAllRates(rates: List<RateEntity>)
+
+    @Query("DELETE FROM rate")
+    fun deleteAllRates()
+
+    @Transaction
+    fun updateRates(rates: List<RateEntity>) {
+        deleteAllRates()
+        insertAllRates(rates)
     }
 }

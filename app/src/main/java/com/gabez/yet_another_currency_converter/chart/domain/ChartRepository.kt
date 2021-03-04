@@ -1,6 +1,5 @@
 package com.gabez.yet_another_currency_converter.chart.domain
 
-import com.gabez.data_access.common.GetCurrenciesResponse
 import com.gabez.data_access.common.GetRatesResponse
 import com.gabez.data_access.entities.CurrencyUniversal
 
@@ -10,6 +9,7 @@ interface ChartRepository {
         code: String,
         currencyName: String,
         dateFrom: String,
-        dateTo: String
+        dateTo: String,
+        hasInternetConnection: Boolean
     ): GetRatesResponse
 }

@@ -1,4 +1,4 @@
-package com.gabez.local_database
+package com.gabez.local_database.entities
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
