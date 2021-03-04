@@ -4,8 +4,8 @@ import com.gabez.data_access.apiFacade.ApiFacade
 import com.gabez.data_access.apiFacade.ApiFacadeImpl
 import com.gabez.data_access.localDbFacade.LocalDbFacade
 import com.gabez.data_access.localDbFacade.LocalDbFacadeImpl
-import com.gabez.yet_another_currency_converter.calculator.app.calculator.CalculatorViewModel
-import com.gabez.yet_another_currency_converter.calculator.app.selectFromAllCurrencies.SelectCurrencyViewModel
+import com.gabez.yet_another_currency_converter.calculator.app.CalculatorViewModel
+import com.gabez.yet_another_currency_converter.selectCurrency.app.SelectCurrencyViewModel
 import com.gabez.yet_another_currency_converter.calculator.data.CalculatorRepositoryImpl
 import com.gabez.nbp_api.apiService.network.NetworkClient
 import com.gabez.nbp_api.apiService.network.NetworkClientImpl

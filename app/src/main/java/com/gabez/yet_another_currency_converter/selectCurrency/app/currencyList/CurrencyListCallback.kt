@@ -1,4 +1,4 @@
-package com.gabez.yet_another_currency_converter.calculator.app.selectFromAllCurrencies.currencyList
+package com.gabez.yet_another_currency_converter.selectCurrency.app.currencyList
 
 import com.gabez.yet_another_currency_converter.calculator.entities.CurrencyForView
 

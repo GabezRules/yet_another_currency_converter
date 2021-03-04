@@ -8,6 +8,8 @@ import com.gabez.nbp_api.apiService.network.NetworkClient
 import com.gabez.nbp_api.apiService.responses.ApiAllCurrenciesResponse
 import com.gabez.nbp_api.apiService.responses.ApiResponseStatus
 
+
+//TODO: Use internet connection monitor in data_access
 class ApiFacadeImpl(private val networkClient: NetworkClient): ApiFacade {
     override suspend fun getCurrencies(): GetCurrenciesResponse {
         return networkClient.getAllCurrenciesMinimal().toUniversalResponse()

@@ -8,9 +8,10 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.gabez.yet_another_currency_converter.R
+import com.gabez.yet_another_currency_converter.chart.entities.CurrencyForFavs
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 
-class ChartCurrenciesAdapter(private var data: List<String>, private var context: Context) :
+class ChartCurrenciesAdapter(private var data: List<CurrencyForFavs>, private var context: Context) :
     RecyclerView.Adapter<ChartCurrenciesAdapter.ViewHolder>() {
     inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         var currencyText: TextView = view.findViewById(R.id.currencyText)
@@ -23,8 +24,8 @@ class ChartCurrenciesAdapter(private var data: List<String>, private var context
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.currencyText.text = data[position]
-        if(data[position] == "PLN") holder.background.backgroundTintList = ColorStateList.valueOf(context.getResources().getColor(R.color.colorPrimaryDark))
+        holder.currencyText.text = data[position].code
+        if(data[position].isSelected) holder.background.backgroundTintList = ColorStateList.valueOf(context.resources.getColor(R.color.colorPrimaryDark))
 
     }
 

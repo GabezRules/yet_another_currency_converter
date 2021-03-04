@@ -1,4 +1,4 @@
-package com.gabez.yet_another_currency_converter.calculator.app.selectFromAllCurrencies
+package com.gabez.yet_another_currency_converter.selectCurrency.app
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
